@@ -1,8 +1,14 @@
-import { registerRootComponent } from 'expo';
+import React from "react";
+import { registerRootComponent } from "expo";
+import { QueryClient, QueryClientProvider } from "react-query";
+import App from "./App";
 
-import App from './App';
+const queryClient = new QueryClient();
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in the Expo client or in a native build,
-// the environment is set up appropriately
-registerRootComponent(App);
+const Root = () => (
+  <QueryClientProvider client={queryClient}>
+    <App />
+  </QueryClientProvider>
+);
+
+registerRootComponent(Root);

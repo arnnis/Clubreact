@@ -9,11 +9,13 @@ import VerificationCode from "./screens/verification-code";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setToken } from "./utils/token";
 import Home from "./screens/home";
+import Room from "./screens/room";
 
 export type StackParamList = {
   Login: undefined;
   VerificationCode: { phonenumber: string };
   Home: undefined;
+  Room: { channel_id: number; channel: string };
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -52,6 +54,7 @@ const Navigator = () => {
               width: 0,
             },
           },
+          headerTintColor: "#333",
           animationEnabled: true,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
@@ -62,7 +65,12 @@ const Navigator = () => {
             <Stack.Screen
               name="Home"
               component={Home}
-              options={{ headerShown: false }}
+              options={{ title: "All rooms", headerShown: false }}
+            />
+            <Stack.Screen
+              name="Room"
+              component={Room}
+              options={{ title: "" }}
             />
           </>
         ) : (

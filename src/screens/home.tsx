@@ -1,25 +1,42 @@
-import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View, FlatList } from "react-native";
+import React, { useState } from "react";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  RefreshControl,
+} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Screen from "../components/screen";
 import { Channel, GetChannelsResult } from "../models/channel";
 import req from "../utils/req";
 import Flex from "../components/flex";
+import { useQuery } from "react-query";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/core";
 
 const Home = () => {
-  const [channels, setChannels] = useState<Channel[]>();
-  useEffect(() => {
-    getChannels();
-  }, []);
+  const { isLoading, error, data, refetch } = useQuery("channels", () =>
+    getChannels()
+  );
+  const { navigate } = useNavigation();
 
   const getChannels = async () => {
     const res = await req("/get_channels");
     const resJson: GetChannelsResult = await res.json();
-    setChannels(resJson.channels);
+    return resJson;
   };
 
+  console.log("datas", data);
+
   const renderChannel = ({ item, index }: { item: Channel; index: number }) => (
-    <View style={styles.channel}>
+    <TouchableOpacity
+      style={styles.channel}
+      onPress={() =>
+        navigate("Room", { channel_id: item.channel_id, channel: item.channel })
+      }
+    >
       <Text style={styles.channelTopic}>{item.topic}</Text>
       <View style={styles.channelBodyContainer}>
         <View style={{ width: 72, height: 72, marginRight: 16 }}>
@@ -37,29 +54,28 @@ const Home = () => {
           {item.users.map((user) => (
             <Flex direction="row" align="center">
               <Text style={styles.channelUserName}>{user.name}</Text>
-              {user.is_speaker && (
+              {false && (
                 <MaterialCommunityIcons
                   name="message-processing-outline"
                   size={14}
                   color="#9c9c9c"
-                  style={{ marginLeft: 4 }}
                 />
               )}
             </Flex>
           ))}
-          <View style={styles.channelUsersStats}>
-            <Text>
-              {item.num_all}
+          <View style={styles.channelUsersStatsContainer}>
+            <Text style={styles.channelUsersStats}>
+              {item.num_all}{" "}
               <MaterialCommunityIcons
                 name="account"
                 size={14}
                 color="#9c9c9c"
-                style={{ marginLeft: 4 }}
               />
-              / {item.num_speakers}{" "}
+              {" " + "/" + " "}
+              {item.num_speakers}{" "}
               <MaterialCommunityIcons
-                name="message-processing-outline"
-                size={14}
+                name="message-processing"
+                size={12.5}
                 color="#9c9c9c"
                 style={{ marginLeft: 4 }}
               />
@@ -67,7 +83,7 @@ const Home = () => {
           </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -82,9 +98,13 @@ const Home = () => {
         />
       </View>
       <FlatList
-        data={channels}
+        data={data?.channels}
         renderItem={renderChannel}
         contentContainerStyle={styles.channelsContainer}
+        keyExtractor={(item) => item.channel_id.toString()}
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+        }
       />
     </Screen>
   );
@@ -111,6 +131,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 16,
     padding: 16,
+    shadowColor: "rgba(0,0,0,5)",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 0.1,
+
+    elevation: 3,
   },
   channelTopic: {
     fontFamily: "Nunito-Bold",
@@ -138,11 +167,15 @@ const styles = StyleSheet.create({
   },
   channelUserName: {
     fontFamily: "Nunito-SemiBold",
-    fontSize: 15,
+    fontSize: 17,
     color: "#49464A",
   },
-  channelUsersStats: {
+  channelUsersStatsContainer: {
     marginTop: 8,
+  },
+  channelUsersStats: {
+    fontFamily: "Nunito-SemiBold",
+    color: "#49464A",
   },
 });
 
