@@ -1,0 +1,12 @@
+{
+  "name": "clubhouse-app",
+  "displayName": "clubhouse-app",
+  "expo": {
+    "name": "clubhouse-app",
+    "slug": "clubhouse-app",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
