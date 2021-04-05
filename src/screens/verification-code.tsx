@@ -14,6 +14,7 @@ import { RouteProp, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StackParamList } from "../navigator";
 import { LoginResult } from "../types";
+import { setAgoraToken, setToken } from "../utils/token";
 
 interface Props {
   route: RouteProp<StackParamList, "VerificationCode">;
@@ -36,6 +37,9 @@ const VerificationCode: FC<Props> = ({ route }) => {
     console.log("login result", resJson);
     if (res.ok) {
       AsyncStorage.setItem("token", resJson.auth_token);
+      AsyncStorage.setItem("agoraToken", resJson.access_token);
+      setToken(resJson.auth_token);
+      setAgoraToken(resJson.access_token);
       navigation.reset({
         index: 1,
         routes: [{ name: "Home" }],

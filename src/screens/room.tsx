@@ -1,18 +1,27 @@
 import { RouteProp, useNavigation } from "@react-navigation/native";
-import React, { FC } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useQuery } from "react-query";
+import RtcEngine from "react-native-agora";
 import Screen from "../components/screen";
 import { Channel, GetChannelsResult } from "../models/channel";
 import { StackParamList } from "../navigator";
 import req from "../utils/req";
+import { getAgoraToken } from "../utils/token";
 
 interface Props {
   route: RouteProp<StackParamList, "Room">;
 }
 
 const Room: FC<Props> = ({ route }) => {
-  const { isLoading, error, data, refetch } = useQuery("room", () => getRoom());
+  const { isLoading, error, data, refetch } = useQuery(
+    "room" + route.params.channel,
+    () => getRoom()
+  );
+  const engineRef = useRef<RtcEngine | null>(null);
+  useEffect(() => {
+    initRTC();
+  }, []);
   const { navigate } = useNavigation();
 
   const getRoom = async () => {
@@ -26,6 +35,67 @@ const Room: FC<Props> = ({ route }) => {
     const resJson: Channel = await res.json();
     return resJson;
   };
+
+  const initRTC = async () => {
+    engineRef.current = await RtcEngine.create(
+      "938de3e8055e42b281bb8c6f69c21f78"
+    );
+
+    joinChannel();
+
+    engineRef.current.addListener("Warning", (warn) => {
+      console.log("Warning", warn);
+    });
+
+    engineRef.current.addListener("Error", (err) => {
+      console.log("Error", err);
+    });
+
+    engineRef.current.addListener("UserJoined", (uid, elapsed) => {
+      console.log("UserJoined", uid, elapsed);
+      // Get current peer IDs
+      //   const { peerIds } = this.state;
+      //   // If new user
+      //   if (peerIds.indexOf(uid) === -1) {
+      //     this.setState({
+      //       // Add peer ID to state array
+      //       peerIds: [...peerIds, uid],
+      //     });
+      //   }
+    });
+
+    engineRef.current.addListener("UserOffline", (uid, reason) => {
+      console.log("UserOffline", uid, reason);
+      //   const { peerIds } = this.state;
+      //   this.setState({
+      //     // Remove peer ID from state array
+      //     peerIds: peerIds.filter((id) => id !== uid),
+      //   });
+    });
+
+    // If Local user joins RTC channel
+    engineRef.current.addListener(
+      "JoinChannelSuccess",
+      (channel, uid, elapsed) => {
+        console.log("JoinChannelSuccess", channel, uid, elapsed);
+        // Set state variable to true
+        // this.setState({
+        //   joinSucceed: true,
+        // });
+      }
+    );
+  };
+
+  const joinChannel = async () => {
+    // Join Channel using null token and channel name
+    await engineRef.current?.joinChannel(
+      getAgoraToken(),
+      route.params.channel,
+      null,
+      0
+    );
+  };
+
   return (
     <Screen>
       <View style={styles.body}>
