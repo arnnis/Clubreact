@@ -16,6 +16,8 @@
     "expo-splash-screen": "~0.8.0",
     "expo-status-bar": "~1.0.3",
     "expo-updates": "~0.4.0",
+    "pubnub": "^4.30.1",
+    "pubnub-react": "^2.1.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "~0.63.4",
@@ -34,6 +36,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
+    "@types/pubnub": "^4.29.2",
     "@types/react": "~16.9.35",
     "@types/react-dom": "~16.9.8",
     "@types/react-native": "~0.63.2",

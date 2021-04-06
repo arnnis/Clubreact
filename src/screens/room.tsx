@@ -20,6 +20,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { useRtc } from "../contexts/rtcContext";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { usePubNub } from "pubnub-react";
+import PubNub from "pubnub";
 
 interface Props {
   route: RouteProp<StackParamList, "Room">;
@@ -29,13 +31,13 @@ const Room: FC<Props> = ({ route }) => {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [loading, setLoading] = useState(false);
   const { engine } = useRtc();
-  console.log("engine", engine);
+  const pubnub = useRef<PubNub | null>(null);
   useEffect(() => {
-    getRoom();
-    // joinRoom();
-    // return () => {
-    //   leaveRoom();
-    // };
+    // getRoom();
+    joinRoom();
+    return () => {
+      leaveRoom();
+    };
   }, []);
   const { goBack } = useNavigation();
   const authState = useSelector((state: RootState) => state.auth);
@@ -56,6 +58,7 @@ const Room: FC<Props> = ({ route }) => {
   };
 
   const joinRoom = async () => {
+    setLoading(true);
     const res = await req("/join_channel", {
       method: "POST",
       body: {
@@ -66,14 +69,18 @@ const Room: FC<Props> = ({ route }) => {
     });
     const resJson: Channel = await res.json();
     console.log("joined channel result", resJson);
+    setLoading(false);
     setChannel(resJson);
     initRTC(resJson.token);
+    initPubnub(resJson);
     return resJson;
   };
 
   const leaveRoom = async () => {
-    //   engine?.leaveChannel();
-    //   engine?.removeAllListeners()
+    engine?.leaveChannel();
+    engine?.removeAllListeners();
+    pubnub.current?.unsubscribeAll();
+    pubnub.current?.stop();
     const res = await req("/leave_channel", {
       method: "POST",
       body: {
@@ -81,6 +88,7 @@ const Room: FC<Props> = ({ route }) => {
       },
     });
     const resJson = await res.json();
+
     console.log("leave channel result", resJson);
     return resJson;
   };
@@ -143,12 +151,71 @@ const Room: FC<Props> = ({ route }) => {
     );
   };
 
+  const initPubnub = (_channel: Channel) => {
+    console.log("pubnub token", _channel.pubnub_token);
+    pubnub.current = new PubNub({
+      publishKey: "pub-c-6878d382-5ae6-4494-9099-f930f938868b",
+      subscribeKey: "sub-c-a4abea84-9ca3-11ea-8e71-f2b83ac9263d",
+      authKey: _channel.pubnub_token,
+      uuid: authState.user_profile?.user_id.toString(),
+      origin: "clubhouse.pubnub.com",
+      presenceTimeout: _channel.pubnub_heartbeat_value,
+      heartbeatInterval: channel?.pubnub_heartbeat_interval,
+    });
+
+    pubnub.current.addListener({
+      message: handlePubnubMessage,
+      status: (event) => console.log("pubnub status", event),
+    });
+
+    pubnub.current.subscribe({
+      channels: [
+        "users." + authState.user_profile?.user_id,
+        "channel_user." +
+          _channel.channel +
+          "." +
+          authState.user_profile?.user_id,
+        "channel_all." + _channel.channel,
+      ],
+    });
+  };
+
+  const handlePubnubMessage = (msg: any) => {
+    console.log("pubnub message:", msg);
+    const { message } = msg;
+    if (message.channel !== route.params.channel) return;
+    if (message.action === "join_channel") {
+      onPubnubUserJoined(message);
+    }
+    // if (message.action === "leave_channel") {
+    //   onPubnubUserLeaved(message);
+    // }
+  };
+
+  const onPubnubUserJoined = (message: any) => {
+    const user = message.user_profile;
+    // @ts-ignore
+    setChannel((prevState) => ({
+      ...prevState,
+      users: [...(prevState?.users ?? []), user],
+    }));
+  };
+
+  const onPubnubUserLeaved = (message: any) => {
+    // @ts-ignore
+    setChannel((prevState) => ({
+      ...prevState,
+      users:
+        prevState?.users?.filter((u) => u.user_id !== message.user_id) ?? [],
+    }));
+  };
+
   const renderUser = (user: User) => {
     const isAudience = !user.is_speaker && !user.is_followed_by_speaker;
-    const isSpeaking = Math.random() > 0.8;
+    // const isSpeaking = user.is_speaker && Math.random() > 0.8;
     return (
       <View style={[styles.user, isAudience && styles.userSmall]}>
-        <View style={isSpeaking && styles.userAvatarSpeaking}>
+        <View style={false && styles.userAvatarSpeaking}>
           <Image
             source={{
               uri:

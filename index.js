@@ -2,6 +2,8 @@ import React from "react";
 import { registerRootComponent } from "expo";
 import { Provider as ReduxProvider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "react-query";
+import PubNub from "pubnub";
+import { PubNubProvider, usePubNub } from "pubnub-react";
 import App from "./App";
 import { store, persistor } from "./src/store/store";
 import { PersistGate } from "redux-persist/integration/react";
