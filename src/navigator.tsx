@@ -36,6 +36,7 @@ const Navigator = () => {
               height: 0,
               width: 0,
             },
+            elevation: 0,
           },
           headerTintColor: "#333",
           animationEnabled: true,

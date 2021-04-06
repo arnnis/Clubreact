@@ -9,7 +9,7 @@ import { StackParamList } from "../navigator";
 import req from "../utils/req";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { useRtcEngine } from "../contexts/rtcEngineContext";
+import { useRtc } from "../contexts/rtcContext";
 
 interface Props {
   route: RouteProp<StackParamList, "Room">;
@@ -17,7 +17,7 @@ interface Props {
 
 const Room: FC<Props> = ({ route }) => {
   const [channel, setChannel] = useState<Channel | null>(null);
-  const { engine } = useRtcEngine();
+  const { engine } = useRtc();
   console.log("engine", engine);
   useEffect(() => {
     joinRoom();

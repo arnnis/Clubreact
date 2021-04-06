@@ -74,14 +74,17 @@ const styles = StyleSheet.create({
   inputContainer: {
     backgroundColor: "#fff",
     width: "70%",
-    padding: 8,
-    paddingVertical: 8,
+    height: 40,
     marginTop: 56,
     borderRadius: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
   },
   input: {
     fontSize: 17,
-    fontFamily: "Nunito-Light",
+    fontFamily: "Nunito-Regular",
+    width: "100%",
   },
   button: {
     width: 175,

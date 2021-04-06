@@ -16,7 +16,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Navigator />
-      {/* <StatusBar style="auto" /> */}
+      <StatusBar style="auto" />
     </View>
   );
 }

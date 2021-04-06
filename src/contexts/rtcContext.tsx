@@ -3,15 +3,15 @@ import RtcEngine, { RtcEngineConfig } from "react-native-agora";
 import { connect } from "react-redux";
 import { RootState } from "../store/store";
 
-export const RtcEngineContext = React.createContext({ engine: null } as {
+export const RtcContext = React.createContext({ engine: null } as {
   engine: null | RtcEngine;
 });
 
-export const useRtcEngine = () => useContext(RtcEngineContext);
+export const useRtc = () => useContext(RtcContext);
 
-type RtcEngineProviderProps = ReturnType<typeof mapStateToProps>;
+type RtcProviderProps = ReturnType<typeof mapStateToProps>;
 
-class RtcEngineProvider extends Component<RtcEngineProviderProps> {
+class RtcProvider extends Component<RtcProviderProps> {
   state = {
     rtcEngine: null as null | RtcEngine,
   };
@@ -20,7 +20,7 @@ class RtcEngineProvider extends Component<RtcEngineProviderProps> {
     if (this.props.authState.auth_token) this.initRtc();
   }
 
-  componentDidUpdate(prevProps: RtcEngineProviderProps) {
+  componentDidUpdate(prevProps: RtcProviderProps) {
     // on login
     if (!prevProps.authState.auth_token && this.props.authState.auth_token) {
       this.initRtc();
@@ -48,9 +48,9 @@ class RtcEngineProvider extends Component<RtcEngineProviderProps> {
 
   render() {
     return (
-      <RtcEngineContext.Provider value={{ engine: this.state.rtcEngine }}>
+      <RtcContext.Provider value={{ engine: this.state.rtcEngine }}>
         {this.props.children}
-      </RtcEngineContext.Provider>
+      </RtcContext.Provider>
     );
   }
 }
@@ -59,4 +59,4 @@ const mapStateToProps = (state: RootState) => ({
   authState: state.auth,
 });
 
-export default connect(mapStateToProps)(RtcEngineProvider);
+export default connect(mapStateToProps)(RtcProvider);
