@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   channel: {
     width: "100%",
-    backgroundColor: "#fff",
+    backgroundColor: "#FEFCFF",
     marginBottom: 16,
     borderRadius: 16,
     padding: 16,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 0.1,
 
-    elevation: 3,
+    elevation: 1,
   },
   channelTopic: {
     fontFamily: "Nunito-Bold",
