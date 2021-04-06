@@ -7,9 +7,11 @@ import {
   View,
   ScrollView,
   Image,
+  RefreshControl,
+  ImageBackground,
 } from "react-native";
 import { useQuery } from "react-query";
-import RtcEngine, { RtcEngineConfig } from "react-native-agora";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Screen from "../components/screen";
 import { Channel, GetChannelsResult, User } from "../models/channel";
 import { StackParamList } from "../navigator";
@@ -17,6 +19,7 @@ import req from "../utils/req";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { useRtc } from "../contexts/rtcContext";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface Props {
   route: RouteProp<StackParamList, "Room">;
@@ -24,6 +27,7 @@ interface Props {
 
 const Room: FC<Props> = ({ route }) => {
   const [channel, setChannel] = useState<Channel | null>(null);
+  const [loading, setLoading] = useState(false);
   const { engine } = useRtc();
   console.log("engine", engine);
   useEffect(() => {
@@ -31,14 +35,13 @@ const Room: FC<Props> = ({ route }) => {
     // joinRoom();
     // return () => {
     //   leaveRoom();
-    //   engine?.leaveChannel();
-    //   engine?.removeAllListeners()
     // };
   }, []);
-  const { navigate } = useNavigation();
+  const { goBack } = useNavigation();
   const authState = useSelector((state: RootState) => state.auth);
 
   const getRoom = async () => {
+    setLoading(true);
     const res = await req("/get_channel", {
       method: "POST",
       body: {
@@ -48,6 +51,7 @@ const Room: FC<Props> = ({ route }) => {
     });
     const resJson: Channel = await res.json();
     setChannel(resJson);
+    setLoading(false);
     return resJson;
   };
 
@@ -68,6 +72,8 @@ const Room: FC<Props> = ({ route }) => {
   };
 
   const leaveRoom = async () => {
+    //   engine?.leaveChannel();
+    //   engine?.removeAllListeners()
     const res = await req("/leave_channel", {
       method: "POST",
       body: {
@@ -139,16 +145,25 @@ const Room: FC<Props> = ({ route }) => {
 
   const renderUser = (user: User) => {
     const isAudience = !user.is_speaker && !user.is_followed_by_speaker;
+    const isSpeaking = Math.random() > 0.8;
     return (
       <View style={[styles.user, isAudience && styles.userSmall]}>
-        <Image
-          source={{
-            uri:
-              user.photo_url ??
-              "data:image/jpeg;base64,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",
-          }}
-          style={[styles.userAvatar, isAudience && styles.userAvatarSmall]}
-        />
+        <View style={isSpeaking && styles.userAvatarSpeaking}>
+          <Image
+            source={{
+              uri:
+                user.photo_url ??
+                "data:image/jpeg;base64,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",
+            }}
+            style={[styles.userAvatar, isAudience && styles.userAvatarSmall]}
+          />
+          {user.is_speaker && (
+            <View style={styles.userMicContainer}>
+              <MaterialCommunityIcons name="microphone" size={18} />
+            </View>
+          )}
+        </View>
+
         <Text style={styles.userName}>{user.name}</Text>
       </View>
     );
@@ -164,9 +179,16 @@ const Room: FC<Props> = ({ route }) => {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={styles.body}>
-        <Text style={styles.topic}>{channel?.topic}</Text>
-        {/* <SectionList
+      <ScrollView
+        contentContainerStyle={styles.body}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={getRoom} />
+        }
+      >
+        {!loading && (
+          <>
+            <Text style={styles.topic}>{channel?.topic}</Text>
+            {/* <SectionList
           data={data}
           renderItem={({ item }) => (
             <Text style={{ color: "blue" }}>{item.name}</Text>
@@ -174,17 +196,30 @@ const Room: FC<Props> = ({ route }) => {
           renderSectionHeader={({ section: { title } }) => <Text>{title}</Text>}
           keyExtractor={(item) => item.name}
         /> */}
-        <View style={styles.usersContainer}>{speakers?.map(renderUser)}</View>
-        <Text>Followed by speakers</Text>
-        <View style={styles.usersContainer}>
-          {followedBySpeakers?.map(renderUser)}
-        </View>
-        <Text>Audience</Text>
-        <View style={styles.usersContainer}>{audience?.map(renderUser)}</View>
+            <View style={styles.usersContainer}>
+              {speakers?.map(renderUser)}
+            </View>
+            <Text style={styles.sectionTitle}>Followed by speakers</Text>
+            <View style={styles.usersContainer}>
+              {followedBySpeakers?.map(renderUser)}
+            </View>
+            <Text style={styles.sectionTitle}>Audience</Text>
+            <View style={styles.usersContainer}>
+              {audience?.map(renderUser)}
+            </View>
+          </>
+        )}
       </ScrollView>
       <View style={styles.footer}>
-        <View style={styles.leaveButton}>
+        <TouchableOpacity style={styles.leaveButton} onPress={goBack}>
           <Text style={styles.leaveButtonTitle}>✌️ Leave quietly</Text>
+        </TouchableOpacity>
+        <View style={styles.raiseHandButton}>
+          <MaterialCommunityIcons
+            name="hand-right"
+            size={25}
+            style={{ marginRight: 2 }}
+          />
         </View>
       </View>
     </Screen>
@@ -201,6 +236,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 40,
     marginTop: 16,
     padding: 24,
+    minHeight: "100%",
   },
   topic: {
     fontFamily: "Nunito-Bold",
@@ -212,6 +248,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     paddingVertical: 16,
+  },
+
+  sectionTitle: {
+    color: "#d7d5d8",
+    marginLeft: 16,
+    fontFamily: "Nunito-Bold",
   },
 
   user: {
@@ -230,13 +272,31 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   userAvatar: {
-    borderRadius: 24,
+    borderRadius: 72 / 2.5,
     width: 72,
     height: 72,
   },
   userAvatarSmall: {
+    borderRadius: 28,
     width: 54,
     height: 54,
+  },
+  userAvatarSpeaking: {
+    borderWidth: 3,
+    borderColor: "#CCCBC5",
+    padding: 3,
+    borderRadius: 34,
+  },
+  userMicContainer: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: "#FEFCFF",
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   footer: {
@@ -258,6 +318,14 @@ const styles = StyleSheet.create({
   leaveButtonTitle: {
     fontFamily: "Nunito-Bold",
     color: "#8E4B60",
+  },
+  raiseHandButton: {
+    padding: 8,
+    backgroundColor: "#B8B7B9",
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: "auto",
   },
 });
 

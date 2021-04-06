@@ -6,6 +6,8 @@ import {
   View,
   FlatList,
   RefreshControl,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Screen from "../components/screen";
@@ -99,7 +101,14 @@ const Home: FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <Screen>
+    <Screen
+      style={{
+        paddingTop: Platform.select({
+          android: StatusBar.currentHeight,
+          default: 0,
+        }),
+      }}
+    >
       <View style={styles.header}>
         <TouchableOpacity onPress={logout}>
           <Image
