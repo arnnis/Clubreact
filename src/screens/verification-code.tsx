@@ -14,7 +14,9 @@ import { RouteProp, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StackParamList } from "../navigator";
 import { LoginResult } from "../types";
-import { setAgoraToken, setToken } from "../utils/token";
+
+import { useDispatch } from "react-redux";
+import { authActions } from "../slices/authSlice";
 
 interface Props {
   route: RouteProp<StackParamList, "VerificationCode">;
@@ -24,6 +26,8 @@ interface Props {
 const VerificationCode: FC<Props> = ({ route }) => {
   const [verificationCode, setVerificationCode] = useState("");
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
   const verifyCode = async () => {
     console.log("phonenumber", route.params.phonenumber);
     const res = await req("/complete_phone_number_auth", {
@@ -36,14 +40,7 @@ const VerificationCode: FC<Props> = ({ route }) => {
     const resJson: LoginResult = await res.json();
     console.log("login result", resJson);
     if (res.ok) {
-      AsyncStorage.setItem("token", resJson.auth_token);
-      AsyncStorage.setItem("agoraToken", resJson.access_token);
-      setToken(resJson.auth_token);
-      setAgoraToken(resJson.access_token);
-      navigation.reset({
-        index: 1,
-        routes: [{ name: "Home" }],
-      });
+      dispatch(authActions.setAuth(resJson));
     } else {
       alert(resJson.error_message);
     }
@@ -70,7 +67,7 @@ const VerificationCode: FC<Props> = ({ route }) => {
 const styles = StyleSheet.create({
   title: {
     fontSize: 25,
-    fontFamily: "NunitoLight",
+    fontFamily: "Nunito-Light",
     marginTop: "25%",
     textAlign: "center",
   },
@@ -84,7 +81,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 17,
-    fontFamily: "NunitoLight",
+    fontFamily: "Nunito-Light",
   },
   button: {
     width: 175,
@@ -98,7 +95,7 @@ const styles = StyleSheet.create({
   },
   buttonTitle: {
     color: "#fff",
-    fontFamily: "NunitoSemiBold",
+    fontFamily: "Nunito-SemiBold",
     fontSize: 18,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   CardStyleInterpolators,
   createStackNavigator,
@@ -6,10 +6,10 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import Login from "./screens/login";
 import VerificationCode from "./screens/verification-code";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setToken } from "./utils/token";
 import Home from "./screens/home";
 import Room from "./screens/room";
+import { useSelector } from "react-redux";
+import { RootState } from "./store/store";
 
 export type StackParamList = {
   Login: undefined;
@@ -21,24 +21,7 @@ export type StackParamList = {
 const Stack = createStackNavigator<StackParamList>();
 
 const Navigator = () => {
-  const [loadingToken, setLoadingToken] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  useEffect(() => {
-    loadToken();
-  }, []);
-
-  const loadToken = async () => {
-    let token = await AsyncStorage.getItem("token");
-    if (token) {
-      setToken(token);
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
-    setLoadingToken(false);
-  };
-
-  if (loadingToken) return null;
+  const authState = useSelector((state: RootState) => state.auth);
 
   return (
     <NavigationContainer>
@@ -58,9 +41,8 @@ const Navigator = () => {
           animationEnabled: true,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
-        mode="card"
       >
-        {isLoggedIn ? (
+        {!!authState.auth_token ? (
           <>
             <Stack.Screen
               name="Home"

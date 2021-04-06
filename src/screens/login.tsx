@@ -95,7 +95,7 @@ const Login = () => {
 const styles = StyleSheet.create({
   title: {
     fontSize: 25,
-    fontFamily: "NunitoLight",
+    fontFamily: "Nunito-Light",
     marginTop: "25%",
   },
   inputContainer: {
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 17,
-    fontFamily: "NunitoRegular",
+    fontFamily: "Nunito-Regular",
     width: "100%",
   },
   button: {
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   buttonTitle: {
     color: "#fff",
-    fontFamily: "NunitoSemiBold",
+    fontFamily: "Nunito-SemiBold",
     fontSize: 18,
   },
 });

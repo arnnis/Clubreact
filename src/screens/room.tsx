@@ -1,13 +1,15 @@
 import { RouteProp, useNavigation } from "@react-navigation/native";
-import React, { FC, useEffect, useRef } from "react";
+import React, { Component, FC, useEffect, useRef } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useQuery } from "react-query";
-import RtcEngine from "react-native-agora";
+import RtcEngine, { RtcEngineConfig } from "react-native-agora";
 import Screen from "../components/screen";
 import { Channel, GetChannelsResult } from "../models/channel";
 import { StackParamList } from "../navigator";
 import req from "../utils/req";
 import { getAgoraToken } from "../utils/token";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 interface Props {
   route: RouteProp<StackParamList, "Room">;
@@ -23,6 +25,7 @@ const Room: FC<Props> = ({ route }) => {
     initRTC();
   }, []);
   const { navigate } = useNavigation();
+  const authState = useSelector((state: RootState) => state.auth);
 
   const getRoom = async () => {
     const res = await req("/get_channel", {
@@ -37,11 +40,17 @@ const Room: FC<Props> = ({ route }) => {
   };
 
   const initRTC = async () => {
-    engineRef.current = await RtcEngine.create(
-      "938de3e8055e42b281bb8c6f69c21f78"
+    engineRef.current = await RtcEngine.createWithConfig(
+      new RtcEngineConfig("938de3e8055e42b281bb8c6f69c21f78")
     );
 
+    await engineRef.current.leaveChannel();
+
     joinChannel();
+
+    engineRef.current.addListener("Warning", (warn) => {
+      console.log("Warning", warn);
+    });
 
     engineRef.current.addListener("Warning", (warn) => {
       console.log("Warning", warn);
@@ -88,8 +97,9 @@ const Room: FC<Props> = ({ route }) => {
 
   const joinChannel = async () => {
     // Join Channel using null token and channel name
+    console.log("access token", authState.access_token);
     await engineRef.current?.joinChannel(
-      getAgoraToken(),
+      authState.auth_token,
       route.params.channel,
       null,
       0

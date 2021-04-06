@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -14,13 +14,22 @@ import req from "../utils/req";
 import Flex from "../components/flex";
 import { useQuery } from "react-query";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { useNavigation } from "@react-navigation/core";
+import { CommonActions, useNavigation } from "@react-navigation/core";
+import { authActions } from "../slices/authSlice";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { StackParamList } from "../navigator";
+import { useDispatch } from "react-redux";
 
-const Home = () => {
+interface Props {
+  navigation: StackNavigationProp<StackParamList, "Home">;
+}
+
+const Home: FC<Props> = ({ navigation }) => {
   const { isLoading, error, data, refetch } = useQuery("channels", () =>
     getChannels()
   );
-  const { navigate } = useNavigation();
+  const { navigate, reset } = useNavigation();
+  const dispatch = useDispatch();
 
   const getChannels = async () => {
     const res = await req("/get_channels");
@@ -28,10 +37,21 @@ const Home = () => {
     return resJson;
   };
 
+  const logout = () => {
+    dispatch(authActions.logout());
+    // navigation.dispatch(
+    //   CommonActions.reset({
+    //     index: 1,
+    //     routes: [{ name: "Login" }],
+    //   })
+    // );
+  };
+
   console.log("datas", data);
 
   const renderChannel = ({ item, index }: { item: Channel; index: number }) => (
     <TouchableOpacity
+      key={item.channel}
       style={styles.channel}
       onPress={() =>
         navigate("Room", { channel_id: item.channel_id, channel: item.channel })
@@ -89,19 +109,21 @@ const Home = () => {
   return (
     <Screen>
       <View style={styles.header}>
-        <Image
-          source={{
-            uri:
-              "https://clubhouseprod.s3.amazonaws.com:443/555026303_ba593aae-8fe8-4ae2-98be-24277fae5ebf_thumbnail_250x250",
-          }}
-          style={styles.avatar}
-        />
+        <TouchableOpacity onPress={logout}>
+          <Image
+            source={{
+              uri:
+                "https://clubhouseprod.s3.amazonaws.com:443/555026303_ba593aae-8fe8-4ae2-98be-24277fae5ebf_thumbnail_250x250",
+            }}
+            style={styles.avatar}
+          />
+        </TouchableOpacity>
       </View>
       <FlatList
         data={data?.channels}
         renderItem={renderChannel}
         contentContainerStyle={styles.channelsContainer}
-        keyExtractor={(item) => item.channel_id.toString()}
+        keyExtractor={(item) => item.channel}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={refetch} />
         }

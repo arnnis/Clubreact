@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,6 +12,14 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+		8B31DC28261BBB880073C679 /* AgoraAIDenoiseExtension.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31DC21261BBB880073C679 /* AgoraAIDenoiseExtension.xcframework */; };
+		8B31DC29261BBB880073C679 /* AgoraRtcKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31DC22261BBB880073C679 /* AgoraRtcKit.xcframework */; };
+		8B31DC2A261BBB880073C679 /* Agorafdkaac.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31DC23261BBB880073C679 /* Agorafdkaac.xcframework */; };
+		8B31DC2B261BBB880073C679 /* AgoraCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31DC24261BBB880073C679 /* AgoraCore.xcframework */; };
+		8B31DC2C261BBB880073C679 /* AgoraDav1dExtension.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31DC25261BBB880073C679 /* AgoraDav1dExtension.xcframework */; };
+		8B31DC2D261BBB880073C679 /* AgoraSoundTouch.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31DC26261BBB880073C679 /* AgoraSoundTouch.xcframework */; };
+		8B31DC2E261BBB880073C679 /* Agoraffmpeg.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B31DC27261BBB880073C679 /* Agoraffmpeg.xcframework */; };
+		8B31DC71261BBCD20073C679 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B31DC70261BBCD20073C679 /* File.swift */; };
 		96905EF65AED1B983A6B3ABC /* libPods-clubhouseapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-clubhouseapp.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 /* End PBXBuildFile section */
@@ -29,6 +37,14 @@
 		6C2E3173556A471DD304B334 /* Pods-clubhouseapp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clubhouseapp.debug.xcconfig"; path = "Target Support Files/Pods-clubhouseapp/Pods-clubhouseapp.debug.xcconfig"; sourceTree = "<group>"; };
 		7A4D352CD337FB3A3BF06240 /* Pods-clubhouseapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clubhouseapp.release.xcconfig"; path = "Target Support Files/Pods-clubhouseapp/Pods-clubhouseapp.release.xcconfig"; sourceTree = "<group>"; };
 		8B31DC06261BB9C00073C679 /* clubhouseapp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "clubhouseapp-Bridging-Header.h"; sourceTree = "<group>"; };
+		8B31DC21261BBB880073C679 /* AgoraAIDenoiseExtension.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AgoraAIDenoiseExtension.xcframework; path = "../node_modules/react-native-agora/ios/RCTAgora/Libs/AgoraAIDenoiseExtension.xcframework"; sourceTree = "<group>"; };
+		8B31DC22261BBB880073C679 /* AgoraRtcKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AgoraRtcKit.xcframework; path = "../node_modules/react-native-agora/ios/RCTAgora/Libs/AgoraRtcKit.xcframework"; sourceTree = "<group>"; };
+		8B31DC23261BBB880073C679 /* Agorafdkaac.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Agorafdkaac.xcframework; path = "../node_modules/react-native-agora/ios/RCTAgora/Libs/Agorafdkaac.xcframework"; sourceTree = "<group>"; };
+		8B31DC24261BBB880073C679 /* AgoraCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AgoraCore.xcframework; path = "../node_modules/react-native-agora/ios/RCTAgora/Libs/AgoraCore.xcframework"; sourceTree = "<group>"; };
+		8B31DC25261BBB880073C679 /* AgoraDav1dExtension.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AgoraDav1dExtension.xcframework; path = "../node_modules/react-native-agora/ios/RCTAgora/Libs/AgoraDav1dExtension.xcframework"; sourceTree = "<group>"; };
+		8B31DC26261BBB880073C679 /* AgoraSoundTouch.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AgoraSoundTouch.xcframework; path = "../node_modules/react-native-agora/ios/RCTAgora/Libs/AgoraSoundTouch.xcframework"; sourceTree = "<group>"; };
+		8B31DC27261BBB880073C679 /* Agoraffmpeg.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Agoraffmpeg.xcframework; path = "../node_modules/react-native-agora/ios/RCTAgora/Libs/Agoraffmpeg.xcframework"; sourceTree = "<group>"; };
+		8B31DC70261BBCD20073C679 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = clubhouseapp/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -40,7 +56,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B31DC28261BBB880073C679 /* AgoraAIDenoiseExtension.xcframework in Frameworks */,
 				96905EF65AED1B983A6B3ABC /* libPods-clubhouseapp.a in Frameworks */,
+				8B31DC2A261BBB880073C679 /* Agorafdkaac.xcframework in Frameworks */,
+				8B31DC2D261BBB880073C679 /* AgoraSoundTouch.xcframework in Frameworks */,
+				8B31DC2C261BBB880073C679 /* AgoraDav1dExtension.xcframework in Frameworks */,
+				8B31DC2E261BBB880073C679 /* Agoraffmpeg.xcframework in Frameworks */,
+				8B31DC29261BBB880073C679 /* AgoraRtcKit.xcframework in Frameworks */,
+				8B31DC2B261BBB880073C679 /* AgoraCore.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,6 +83,7 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				8B31DC06261BB9C00073C679 /* clubhouseapp-Bridging-Header.h */,
+				8B31DC70261BBCD20073C679 /* File.swift */,
 			);
 			name = clubhouseapp;
 			sourceTree = "<group>";
@@ -67,6 +91,13 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8B31DC21261BBB880073C679 /* AgoraAIDenoiseExtension.xcframework */,
+				8B31DC24261BBB880073C679 /* AgoraCore.xcframework */,
+				8B31DC25261BBB880073C679 /* AgoraDav1dExtension.xcframework */,
+				8B31DC23261BBB880073C679 /* Agorafdkaac.xcframework */,
+				8B31DC27261BBB880073C679 /* Agoraffmpeg.xcframework */,
+				8B31DC22261BBB880073C679 /* AgoraRtcKit.xcframework */,
+				8B31DC26261BBB880073C679 /* AgoraSoundTouch.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-clubhouseapp.a */,
@@ -303,6 +334,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				8B31DC71261BBCD20073C679 /* File.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -337,7 +369,10 @@
 				);
 				INFOPLIST_FILE = clubhouseapp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -362,7 +397,10 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = clubhouseapp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -424,7 +462,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",
@@ -477,7 +518,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"",

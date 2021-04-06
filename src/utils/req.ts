@@ -1,3 +1,4 @@
+import { store } from "../store/store";
 import { getToken } from "./token";
 
 export const API_URL = "https://www.clubhouseapi.com/api";
@@ -26,9 +27,10 @@ interface Opts {
 }
 
 const req = (path: string, opts?: Opts) => {
-  if (getToken()) {
+  const token = store.getState().auth.auth_token;
+  if (token) {
     // @ts-ignore
-    HEADERS["Authorization"] = `Token ${getToken()}`;
+    HEADERS["Authorization"] = `Token ${token}`;
   }
   return fetch(API_URL + path, {
     method: opts?.method ?? "GET",
