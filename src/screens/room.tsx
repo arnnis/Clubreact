@@ -1,5 +1,5 @@
 import { RouteProp, useNavigation } from "@react-navigation/native";
-import React, { Component, FC, useEffect, useRef } from "react";
+import React, { Component, FC, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useQuery } from "react-query";
 import RtcEngine, { RtcEngineConfig } from "react-native-agora";
@@ -7,22 +7,24 @@ import Screen from "../components/screen";
 import { Channel, GetChannelsResult } from "../models/channel";
 import { StackParamList } from "../navigator";
 import req from "../utils/req";
-import { getAgoraToken } from "../utils/token";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { useRtcEngine } from "../contexts/rtcEngineContext";
 
 interface Props {
   route: RouteProp<StackParamList, "Room">;
 }
 
 const Room: FC<Props> = ({ route }) => {
-  const { isLoading, error, data, refetch } = useQuery(
-    "room" + route.params.channel,
-    () => getRoom()
-  );
-  const engineRef = useRef<RtcEngine | null>(null);
+  const [channel, setChannel] = useState<Channel | null>(null);
+  const { engine } = useRtcEngine();
+  console.log("engine", engine);
   useEffect(() => {
-    initRTC();
+    joinRoom();
+    return () => {
+      leaveRoom();
+      engine?.leaveChannel();
+    };
   }, []);
   const { navigate } = useNavigation();
   const authState = useSelector((state: RootState) => state.auth);
@@ -36,31 +38,54 @@ const Room: FC<Props> = ({ route }) => {
       },
     });
     const resJson: Channel = await res.json();
+
     return resJson;
   };
 
-  const initRTC = async () => {
-    engineRef.current = await RtcEngine.createWithConfig(
-      new RtcEngineConfig("938de3e8055e42b281bb8c6f69c21f78")
-    );
+  const joinRoom = async () => {
+    const res = await req("/join_channel", {
+      method: "POST",
+      body: {
+        channel: route.params.channel,
+        attribution_source: "feed",
+        attribution_details: "eyJpc19leHBsb3JlIjpmYWxzZSwicmFuayI6MX0=",
+      },
+    });
+    const resJson: Channel = await res.json();
+    console.log("joined channel result", resJson);
+    setChannel(resJson);
+    initRTC(resJson.token);
+    return resJson;
+  };
 
-    await engineRef.current.leaveChannel();
+  const leaveRoom = async () => {
+    const res = await req("/leave_channel", {
+      method: "POST",
+      body: {
+        channel: route.params.channel,
+      },
+    });
+    const resJson = await res.json();
+    console.log("leave channel result", resJson);
+    return resJson;
+  };
 
-    joinChannel();
+  const initRTC = async (token: string | undefined) => {
+    joinChannel(token);
 
-    engineRef.current.addListener("Warning", (warn) => {
+    engine?.addListener("Warning", (warn) => {
       console.log("Warning", warn);
     });
 
-    engineRef.current.addListener("Warning", (warn) => {
+    engine?.addListener("Warning", (warn) => {
       console.log("Warning", warn);
     });
 
-    engineRef.current.addListener("Error", (err) => {
+    engine?.addListener("Error", (err) => {
       console.log("Error", err);
     });
 
-    engineRef.current.addListener("UserJoined", (uid, elapsed) => {
+    engine?.addListener("UserJoined", (uid, elapsed) => {
       console.log("UserJoined", uid, elapsed);
       // Get current peer IDs
       //   const { peerIds } = this.state;
@@ -73,7 +98,7 @@ const Room: FC<Props> = ({ route }) => {
       //   }
     });
 
-    engineRef.current.addListener("UserOffline", (uid, reason) => {
+    engine?.addListener("UserOffline", (uid, reason) => {
       console.log("UserOffline", uid, reason);
       //   const { peerIds } = this.state;
       //   this.setState({
@@ -83,33 +108,30 @@ const Room: FC<Props> = ({ route }) => {
     });
 
     // If Local user joins RTC channel
-    engineRef.current.addListener(
-      "JoinChannelSuccess",
-      (channel, uid, elapsed) => {
-        console.log("JoinChannelSuccess", channel, uid, elapsed);
-        // Set state variable to true
-        // this.setState({
-        //   joinSucceed: true,
-        // });
-      }
-    );
+    engine?.addListener("JoinChannelSuccess", (channel, uid, elapsed) => {
+      console.log("JoinChannelSuccess", channel, uid, elapsed);
+      // Set state variable to true
+      // this.setState({
+      //   joinSucceed: true,
+      // });
+    });
   };
 
-  const joinChannel = async () => {
+  const joinChannel = async (token: string | undefined) => {
     // Join Channel using null token and channel name
-    console.log("access token", authState.access_token);
-    await engineRef.current?.joinChannel(
-      authState.auth_token,
+    console.log("channel token", token);
+    await engine?.joinChannel(
+      token,
       route.params.channel,
       null,
-      0
+      authState.user_profile?.user_id ?? 0
     );
   };
 
   return (
     <Screen>
       <View style={styles.body}>
-        <Text style={styles.topic}>{data?.topic}</Text>
+        <Text style={styles.topic}>{channel?.topic}</Text>
       </View>
     </Screen>
   );

@@ -39,15 +39,7 @@ const Home: FC<Props> = ({ navigation }) => {
 
   const logout = () => {
     dispatch(authActions.logout());
-    // navigation.dispatch(
-    //   CommonActions.reset({
-    //     index: 1,
-    //     routes: [{ name: "Login" }],
-    //   })
-    // );
   };
-
-  console.log("datas", data);
 
   const renderChannel = ({ item, index }: { item: Channel; index: number }) => (
     <TouchableOpacity

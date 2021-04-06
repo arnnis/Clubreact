@@ -24,12 +24,21 @@ export interface Channel {
   num_all: number;
   users: User[];
   logging_context: LoggingContext;
-
   is_handraise_enabled?: boolean;
   handraise_permission?: number;
   is_club_member?: boolean;
   is_club_admin?: boolean;
   should_leave?: boolean;
+
+  is_empty?: boolean;
+  token?: string;
+  rtm_token?: string;
+  pubnub_token?: string;
+  pubnub_origin?: string;
+  pubnub_heartbeat_value?: number;
+  pubnub_heartbeat_interval?: number;
+  pubnub_enable?: boolean;
+  agora_native_mute?: boolean;
 }
 
 export interface Club {
