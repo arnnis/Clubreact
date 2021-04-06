@@ -32,6 +32,7 @@ const Room: FC<Props> = ({ route }) => {
   const [loading, setLoading] = useState(false);
   const { engine } = useRtc();
   const pubnub = useRef<PubNub | null>(null);
+  const [speakingUsers, setSpeakingUsers] = useState<number[]>([]);
   useEffect(() => {
     // getRoom();
     joinRoom();
@@ -110,33 +111,20 @@ const Room: FC<Props> = ({ route }) => {
 
     engine?.addListener("UserJoined", (uid, elapsed) => {
       console.log("UserJoined", uid, elapsed);
-      // Get current peer IDs
-      //   const { peerIds } = this.state;
-      //   // If new user
-      //   if (peerIds.indexOf(uid) === -1) {
-      //     this.setState({
-      //       // Add peer ID to state array
-      //       peerIds: [...peerIds, uid],
-      //     });
-      //   }
     });
 
     engine?.addListener("UserOffline", (uid, reason) => {
       console.log("UserOffline", uid, reason);
-      //   const { peerIds } = this.state;
-      //   this.setState({
-      //     // Remove peer ID from state array
-      //     peerIds: peerIds.filter((id) => id !== uid),
-      //   });
     });
 
     // If Local user joins RTC channel
     engine?.addListener("JoinChannelSuccess", (channel, uid, elapsed) => {
       console.log("JoinChannelSuccess", channel, uid, elapsed);
-      // Set state variable to true
-      // this.setState({
-      //   joinSucceed: true,
-      // });
+    });
+
+    engine?.addListener("AudioVolumeIndication", (speakers) => {
+      console.log("loadest spkears", speakers);
+      setSpeakingUsers(speakers.map((s) => s.uid));
     });
   };
 
@@ -212,10 +200,10 @@ const Room: FC<Props> = ({ route }) => {
 
   const renderUser = (user: User) => {
     const isAudience = !user.is_speaker && !user.is_followed_by_speaker;
-    // const isSpeaking = user.is_speaker && Math.random() > 0.8;
+    const isSpeaking = speakingUsers.includes(user.user_id);
     return (
       <View style={[styles.user, isAudience && styles.userSmall]}>
-        <View style={false && styles.userAvatarSpeaking}>
+        <View style={isSpeaking && styles.userAvatarSpeaking}>
           <Image
             source={{
               uri:

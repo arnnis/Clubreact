@@ -42,6 +42,7 @@ class RtcProvider extends Component<RtcProviderProps> {
       rtcEngine.setDefaultAudioRoutetoSpeakerphone(true);
       rtcEngine.enableAudioVolumeIndication(500, 3, false);
       rtcEngine.muteLocalAudioStream(true);
+
       this.setState({ rtcEngine });
       console.log("rtc engine initialized");
     } catch (err) {
