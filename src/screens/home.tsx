@@ -8,6 +8,9 @@ import {
   RefreshControl,
   Platform,
   StatusBar,
+  TouchableOpacity,
+  TouchableNativeFeedback,
+  processColor,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Screen from "../components/screen";
@@ -15,12 +18,12 @@ import { Channel, GetChannelsResult } from "../models/channel";
 import req from "../utils/req";
 import Flex from "../components/flex";
 import { useQuery } from "react-query";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { CommonActions, useNavigation } from "@react-navigation/core";
 import { authActions } from "../slices/authSlice";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StackParamList } from "../navigator";
 import { useDispatch } from "react-redux";
+import Touchable from "../components/touchable";
 
 interface Props {
   navigation: StackNavigationProp<StackParamList, "Home">;
@@ -44,12 +47,12 @@ const Home: FC<Props> = ({ navigation }) => {
   };
 
   const renderChannel = ({ item, index }: { item: Channel; index: number }) => (
-    <TouchableOpacity
+    <Touchable
       key={item.channel}
-      style={styles.channel}
       onPress={() =>
         navigate("Room", { channel_id: item.channel_id, channel: item.channel })
       }
+      style={styles.channel}
     >
       <Text style={styles.channelTopic}>{item.topic}</Text>
       <View style={styles.channelBodyContainer}>
@@ -66,7 +69,7 @@ const Home: FC<Props> = ({ navigation }) => {
         </View>
         <View>
           {item.users.map((user) => (
-            <Flex direction="row" align="center">
+            <Flex key={user.user_id} direction="row" align="center">
               <Text style={styles.channelUserName}>{user.name}</Text>
               {false && (
                 <MaterialCommunityIcons
@@ -97,7 +100,7 @@ const Home: FC<Props> = ({ navigation }) => {
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </Touchable>
   );
 
   return (

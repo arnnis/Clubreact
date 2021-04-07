@@ -3,6 +3,10 @@ import { useFonts } from "expo-font";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import Navigator from "./src/navigator";
+import { LogBox } from "react-native";
+
+// This log comes from rtc/pubnub depencency
+LogBox.ignoreLogs(["Setting a timer for a long period of time"]);
 
 export default function App() {
   const [loaded, error] = useFonts({

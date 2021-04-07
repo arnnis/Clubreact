@@ -4,6 +4,7 @@ import { Provider as ReduxProvider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "react-query";
 import PubNub from "pubnub";
 import { PubNubProvider, usePubNub } from "pubnub-react";
+import { ToastProvider } from "react-native-fast-toast";
 import App from "./App";
 import { store, persistor } from "./src/store/store";
 import { PersistGate } from "redux-persist/integration/react";
@@ -16,7 +17,9 @@ const Root = () => (
     <PersistGate persistor={persistor}>
       <QueryClientProvider client={queryClient}>
         <RtcProvider>
-          <App />
+          <ToastProvider>
+            <App />
+          </ToastProvider>
         </RtcProvider>
       </QueryClientProvider>
     </PersistGate>

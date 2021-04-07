@@ -23,6 +23,7 @@
     "react-native": "~0.63.4",
     "react-native-agora": "^3.3.2",
     "react-native-country-picker-modal": "^2.0.0",
+    "react-native-fast-toast": "^2.2.0",
     "react-native-gesture-handler": "~1.8.0",
     "react-native-reanimated": "~1.13.0",
     "react-native-safe-area-context": "3.1.9",
@@ -31,6 +32,7 @@
     "react-native-web": "~0.13.12",
     "react-query": "^3.13.4",
     "react-redux": "^7.2.3",
+    "recyclerlistview": "^3.0.5",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0"
   },
