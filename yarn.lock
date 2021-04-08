@@ -7377,6 +7377,11 @@ react-native-country-picker-modal@^2.0.0:
     prop-types "15.7.2"
     react-async-hook "3.6.1"
 
+react-native-fast-image@^8.3.4:
+  version "8.3.4"
+  resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.3.4.tgz#79edca177e30311b19d59ff335625bcbe22650d7"
+  integrity sha512-LpzAdjUphihUpVEBn5fEv5AILe55rHav0YiZroPZ1rumKDhAl4u2cG01ku2Pb7l8sayjTsNu7FuURAlXUUDsow==
+
 react-native-fast-toast@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/react-native-fast-toast/-/react-native-fast-toast-2.2.0.tgz#a94100180d3fd4f91499970e0a42886dfee4351e"

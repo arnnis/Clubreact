@@ -11,4 +11,5 @@ export default {
   whitelist: ["auth"],
   migrate: createMigrate(migrations, { debug: false }),
   stateReconciler: autoMergeLevel2,
+  timeout: null,
 };

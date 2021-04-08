@@ -7,15 +7,17 @@ import { NavigationContainer } from "@react-navigation/native";
 import Login from "./screens/login";
 import VerificationCode from "./screens/verification-code";
 import Home from "./screens/home";
-import Room from "./screens/room";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
+
+import Room from "./screens/room";
 
 export type StackParamList = {
   Login: undefined;
   VerificationCode: { phonenumber: string };
   Home: undefined;
   Room: { channel_id: number; channel: string };
+  RecycleTestComponent: { channel_id: number; channel: string };
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -43,6 +45,11 @@ const Navigator = () => {
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
       >
+        {/* <Stack.Screen
+          name="RecycleTestComponent"
+          component={RecycleTestComponent}
+          options={{ title: "" }}
+        /> */}
         {!!authState.auth_token ? (
           <>
             <Stack.Screen

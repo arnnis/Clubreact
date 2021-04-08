@@ -1,4 +1,4 @@
-import React, { Component, FC, useContext } from "react";
+import React, { Component, ComponentType, FC, useContext } from "react";
 import RtcEngine, { RtcEngineConfig } from "react-native-agora";
 import { connect } from "react-redux";
 import { RootState } from "../store/store";
@@ -6,8 +6,6 @@ import { RootState } from "../store/store";
 export const RtcContext = React.createContext({ engine: null } as {
   engine: null | RtcEngine;
 });
-
-export const useRtc = () => useContext(RtcContext);
 
 type RtcProviderProps = ReturnType<typeof mapStateToProps>;
 
@@ -64,3 +62,17 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 export default connect(mapStateToProps)(RtcProvider);
+
+export const useRtc = () => useContext(RtcContext);
+
+export const withRtc = (C: any) => {
+  return class extends Component {
+    render() {
+      return (
+        <RtcContext.Consumer>
+          {(value) => <C rtc={value} {...this.props} />}
+        </RtcContext.Consumer>
+      );
+    }
+  };
+};
