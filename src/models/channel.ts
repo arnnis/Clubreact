@@ -39,6 +39,9 @@ export interface Channel {
   pubnub_heartbeat_interval?: number;
   pubnub_enable?: boolean;
   agora_native_mute?: boolean;
+
+  error_message?: string;
+  success: boolean;
 }
 
 export interface Club {

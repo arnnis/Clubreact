@@ -1,27 +1,15 @@
-import { RouteProp, useNavigation } from "@react-navigation/native";
-import React, { Component, FC, useEffect, useRef, useState } from "react";
-import {
-  SectionList,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Image,
-  RefreshControl,
-  ImageBackground,
-  Dimensions,
-} from "react-native";
-import FastImage from "react-native-fast-image";
+import { RouteProp } from "@react-navigation/native";
+import React, { Component } from "react";
+import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Screen from "../components/screen";
-import { Channel, GetChannelsResult, User } from "../models/channel";
+import { Channel, User } from "../models/channel";
 import { StackParamList } from "../navigator";
 import req from "../utils/req";
-import { connect, useSelector } from "react-redux";
+import { connect } from "react-redux";
 import { RootState } from "../store/store";
-import { useRtc, withRtc } from "../contexts/rtcContext";
+import { withRtc, WithRtcProp } from "../contexts/rtcContext";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { usePubNub } from "pubnub-react";
 import PubNub from "pubnub";
 import {
   DataProvider,
@@ -29,6 +17,7 @@ import {
   RecyclerListView,
 } from "recyclerlistview";
 import Flex from "../components/flex";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 let { width } = Dimensions.get("window");
 const ViewTypes = {
@@ -38,12 +27,20 @@ const ViewTypes = {
   SECTION_TITLE: 3,
 };
 
-interface Props {
+interface Props extends WithRtcProp, ReturnType<typeof mapStateToProps> {
   route: RouteProp<StackParamList, "Room">;
+  navigation: StackNavigationProp<StackParamList, "Room">;
 }
 
-class RoomRecyclerClass extends Component<Props> {
-  constructor(props) {
+interface State {
+  dataProvider: DataProvider;
+  speakingUsers: number[];
+  loading: boolean;
+  channel: Channel | null;
+}
+
+class RoomRecyclerClass extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       dataProvider: new DataProvider(
@@ -51,7 +48,7 @@ class RoomRecyclerClass extends Component<Props> {
       ).cloneWithRows([]),
       speakingUsers: [],
       loading: false,
-      channel: null as Channel | null,
+      channel: null,
     };
   }
 
@@ -105,7 +102,7 @@ class RoomRecyclerClass extends Component<Props> {
     this.leaveRoom();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: Props, prevState: State) {
     if (
       prevState.channel?.users?.length !== this.state.channel?.users?.length
     ) {
@@ -145,8 +142,8 @@ class RoomRecyclerClass extends Component<Props> {
   };
 
   leaveRoom = async () => {
-    this.props.rtc?.engine.leaveChannel();
-    this.props.rtc?.engine.removeAllListeners();
+    this.props.rtc?.engine?.leaveChannel();
+    this.props.rtc?.engine?.removeAllListeners();
     this.pubnub?.unsubscribeAll();
     this.pubnub?.stop();
     const res = await req("/leave_channel", {
@@ -246,7 +243,7 @@ class RoomRecyclerClass extends Component<Props> {
     this.setState({
       channel: {
         ...this.state.channel,
-        users: [...this.state.channel.users, user],
+        users: [...(this.state.channel?.users ?? []), user],
       },
     });
   };
@@ -256,7 +253,7 @@ class RoomRecyclerClass extends Component<Props> {
       channel: {
         ...this.state.channel,
         users:
-          this.state.channel.users?.filter(
+          this.state.channel?.users?.filter(
             (u) => u.user_id !== message.user_id
           ) ?? [],
       },
@@ -267,7 +264,7 @@ class RoomRecyclerClass extends Component<Props> {
     this.joinChannel(token);
 
     const engine = this.props.rtc.engine;
-    engine.setDefaultAudioRoutetoSpeakerphone(true);
+    engine?.setDefaultAudioRoutetoSpeakerphone(true);
     engine?.addListener("Warning", (warn) => {
       console.log("Warning", warn);
     });
@@ -302,7 +299,7 @@ class RoomRecyclerClass extends Component<Props> {
   joinChannel = async (token: string | undefined) => {
     // Join Channel using null token and channel name
     console.log("channel token", token);
-    await this.props.rtc?.engine.joinChannel(
+    await this.props.rtc?.engine?.joinChannel(
       token,
       this.props.route.params.channel,
       null,
@@ -336,7 +333,7 @@ class RoomRecyclerClass extends Component<Props> {
     );
   };
 
-  rowRenderer = (type, data, index, extendedState) => {
+  rowRenderer = (type: any, data: any, index: number, extendedState: any) => {
     //You can return any view here, CellContainer has no special significance
     switch (type) {
       case ViewTypes.ROOM_TITLE:

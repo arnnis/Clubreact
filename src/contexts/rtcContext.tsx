@@ -3,9 +3,11 @@ import RtcEngine, { RtcEngineConfig } from "react-native-agora";
 import { connect } from "react-redux";
 import { RootState } from "../store/store";
 
-export const RtcContext = React.createContext({ engine: null } as {
+interface ContextValue {
   engine: null | RtcEngine;
-});
+}
+
+export const RtcContext = React.createContext({ engine: null } as ContextValue);
 
 type RtcProviderProps = ReturnType<typeof mapStateToProps>;
 
@@ -64,6 +66,10 @@ const mapStateToProps = (state: RootState) => ({
 export default connect(mapStateToProps)(RtcProvider);
 
 export const useRtc = () => useContext(RtcContext);
+
+export interface WithRtcProp {
+  rtc: ContextValue;
+}
 
 export const withRtc = (C: any) => {
   return class extends Component {
