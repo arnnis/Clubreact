@@ -4,6 +4,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import Navigator from "./src/navigator";
 import { LogBox } from "react-native";
+import Toast from "react-native-fast-toast";
 
 // This log comes from rtc/pubnub depencency
 LogBox.ignoreLogs(["Setting a timer for a long period of time"]);
@@ -21,6 +22,7 @@ export default function App() {
     <View style={styles.container}>
       <Navigator />
       <StatusBar style="auto" />
+      <Toast ref={(ref) => (global["toast"] = ref)} />
     </View>
   );
 }

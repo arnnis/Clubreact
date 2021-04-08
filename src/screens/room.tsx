@@ -129,6 +129,11 @@ class RoomRecyclerClass extends Component<Props> {
     });
     const resJson: Channel = await res.json();
     console.log("joined channel result", resJson);
+    if (resJson.success === false) {
+      toast?.show(resJson.error_message, { type: "normal", duration: 8000 });
+      this.props.navigation.goBack();
+      return;
+    }
     await this.setState({
       channel: resJson,
       loading: false,
