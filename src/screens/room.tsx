@@ -1,6 +1,6 @@
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { RefreshControl, StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Screen from "../components/screen";
 import { Channel, User } from "../models/channel";
@@ -12,6 +12,7 @@ import { useRtc } from "../contexts/rtcContext";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import PubNub from "pubnub";
 import FastImage from "react-native-fast-image";
+import { useTheme } from "../contexts/theme/context";
 
 interface Props {
   route: RouteProp<StackParamList, "Room">;
@@ -32,6 +33,7 @@ const Room: FC<Props> = ({ route }) => {
   }, []);
   const { goBack } = useNavigation();
   const authState = useSelector((state: RootState) => state.auth);
+  const { theme } = useTheme();
 
   const getRoom = async () => {
     setLoading(true);
@@ -203,13 +205,19 @@ const Room: FC<Props> = ({ route }) => {
             style={[styles.userAvatar, isAudience && styles.userAvatarSmall]}
           />
           {user.is_speaker && (
-            <View style={styles.userMicContainer}>
-              <MaterialCommunityIcons name="microphone" size={18} />
+            <View
+              style={[styles.userMicContainer, { backgroundColor: theme.bg2 }]}
+            >
+              <MaterialCommunityIcons
+                name="microphone"
+                size={18}
+                color={theme.fg}
+              />
             </View>
           )}
         </View>
 
-        <Text style={styles.userName}>{user.name}</Text>
+        <Text style={[styles.userName, { color: theme.fg }]}>{user.name}</Text>
       </View>
     );
   };
@@ -235,24 +243,36 @@ const Room: FC<Props> = ({ route }) => {
   return (
     <Screen>
       <FlatList
-        contentContainerStyle={styles.body}
+        contentContainerStyle={[styles.body, { backgroundColor: theme.bg2 }]}
         ListHeaderComponent={
-          <>
-            <Text style={styles.topic}>{channel?.topic}</Text>
-            <View style={styles.usersContainer}>
-              {speakers?.map(renderUser)}
-            </View>
-            <Text style={styles.sectionTitle}>Followed by speakers</Text>
-            <View style={styles.usersContainer}>
-              {followedBySpeakers?.map(renderUser)}
-            </View>
-          </>
+          loading ? null : (
+            <>
+              <Text style={[styles.topic, { color: theme.fg }]}>
+                {channel?.topic}
+              </Text>
+              <View style={styles.usersContainer}>
+                {speakers?.map(renderUser)}
+              </View>
+              <Text style={[styles.sectionTitle, { color: theme.fg2 }]}>
+                Followed by speakers
+              </Text>
+              <View style={styles.usersContainer}>
+                {followedBySpeakers?.map(renderUser)}
+              </View>
+              <Text style={[styles.sectionTitle, { color: theme.fg2 }]}>
+                Audience ({audience?.length})
+              </Text>
+            </>
+          )
         }
         data={audience}
         renderItem={renderItem}
         numColumns={4}
         keyExtractor={(item) => item.user_id.toString()}
         removeClippedSubviews
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={getRoom} />
+        }
       />
       {/* <ScrollView
         contentContainerStyle={styles.body}
@@ -280,14 +300,18 @@ const Room: FC<Props> = ({ route }) => {
         )}
       </ScrollView> */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.leaveButton} onPress={goBack}>
-          <Text style={styles.leaveButtonTitle}>✌️ Leave quietly</Text>
+        <TouchableOpacity
+          style={[styles.leaveButton, { backgroundColor: theme.bg2 }]}
+          onPress={goBack}
+        >
+          <Text style={[styles.leaveButtonTitle]}>✌️ Leave quietly</Text>
         </TouchableOpacity>
-        <View style={styles.raiseHandButton}>
+        <View style={[styles.raiseHandButton, { backgroundColor: theme.bg2 }]}>
           <MaterialCommunityIcons
             name="hand-right"
             size={25}
             style={{ marginRight: 2 }}
+            color={theme.fg}
           />
         </View>
       </View>
@@ -300,7 +324,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   body: {
-    backgroundColor: "#FEFCFF",
     borderTopRightRadius: 40,
     borderTopLeftRadius: 40,
     marginTop: 16,
@@ -371,7 +394,6 @@ const styles = StyleSheet.create({
   footer: {
     height: 72,
     width: "100%",
-    backgroundColor: "#FEFCFF",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,

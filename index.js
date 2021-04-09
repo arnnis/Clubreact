@@ -9,6 +9,7 @@ import App from "./App";
 import { store, persistor } from "./src/store/store";
 import { PersistGate } from "redux-persist/integration/react";
 import RtcProvider from "./src/contexts/rtcContext";
+import { ThemeProvider } from "./src/contexts/theme/provider";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +19,9 @@ const Root = () => (
       <QueryClientProvider client={queryClient}>
         <RtcProvider>
           <ToastProvider>
-            <App />
+            <ThemeProvider>
+              <App />
+            </ThemeProvider>
           </ToastProvider>
         </RtcProvider>
       </QueryClientProvider>

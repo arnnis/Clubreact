@@ -24,6 +24,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { StackParamList } from "../navigator";
 import { useDispatch } from "react-redux";
 import Touchable from "../components/touchable";
+import { useTheme } from "../contexts/theme/context";
 
 interface Props {
   navigation: StackNavigationProp<StackParamList, "Home">;
@@ -35,6 +36,7 @@ const Home: FC<Props> = ({ navigation }) => {
   );
   const { navigate, reset } = useNavigation();
   const dispatch = useDispatch();
+  const { theme, toggleTheme } = useTheme();
 
   const getChannels = async () => {
     const res = await req("/get_channels");
@@ -52,9 +54,11 @@ const Home: FC<Props> = ({ navigation }) => {
       onPress={() =>
         navigate("Room", { channel_id: item.channel_id, channel: item.channel })
       }
-      style={styles.channel}
+      style={[styles.channel, { backgroundColor: theme.bg2 }]}
     >
-      <Text style={styles.channelTopic}>{item.topic}</Text>
+      <Text style={[styles.channelTopic, { color: theme.fg }]}>
+        {item.topic}
+      </Text>
       <View style={styles.channelBodyContainer}>
         <View style={{ width: 72, height: 72, marginRight: 16 }}>
           <Image
@@ -70,30 +74,32 @@ const Home: FC<Props> = ({ navigation }) => {
         <View>
           {item.users.map((user) => (
             <Flex key={user.user_id} direction="row" align="center">
-              <Text style={styles.channelUserName}>{user.name}</Text>
+              <Text style={[styles.channelUserName, { color: theme.fg }]}>
+                {user.name}
+              </Text>
               {false && (
                 <MaterialCommunityIcons
                   name="message-processing-outline"
                   size={14}
-                  color="#9c9c9c"
+                  color={theme.fg2}
                 />
               )}
             </Flex>
           ))}
           <View style={styles.channelUsersStatsContainer}>
-            <Text style={styles.channelUsersStats}>
+            <Text style={[styles.channelUsersStats, { color: theme.fg2 }]}>
               {item.num_all}{" "}
               <MaterialCommunityIcons
                 name="account"
                 size={14}
-                color="#9c9c9c"
+                color={theme.fg2}
               />
               {" " + "/" + " "}
               {item.num_speakers}{" "}
               <MaterialCommunityIcons
                 name="message-processing"
                 size={12.5}
-                color="#9c9c9c"
+                color={theme.fg2}
                 style={{ marginLeft: 4 }}
               />
             </Text>
@@ -113,6 +119,13 @@ const Home: FC<Props> = ({ navigation }) => {
       }}
     >
       <View style={styles.header}>
+        <Touchable onPress={toggleTheme} style={{ marginRight: 16 }}>
+          <MaterialCommunityIcons
+            name="theme-light-dark"
+            size={28}
+            color={theme.fg}
+          />
+        </Touchable>
         <TouchableOpacity onPress={logout}>
           <Image
             source={{
@@ -138,7 +151,11 @@ const Home: FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   header: {
-    height: 55,
+    height: 64,
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
   avatar: {
     height: 32,

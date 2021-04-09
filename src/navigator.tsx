@@ -10,6 +10,7 @@ import Home from "./screens/home";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import Room from "./screens/room";
+import { useTheme } from "./contexts/theme/context";
 
 export type StackParamList = {
   Login: undefined;
@@ -23,6 +24,7 @@ const Stack = createStackNavigator<StackParamList>();
 
 const Navigator = () => {
   const authState = useSelector((state: RootState) => state.auth);
+  const { theme } = useTheme();
 
   return (
     <NavigationContainer>
@@ -30,7 +32,7 @@ const Navigator = () => {
         screenOptions={{
           headerShown: true,
           headerStyle: {
-            backgroundColor: "#f2efe4",
+            backgroundColor: theme.bg,
             borderBottomWidth: 0,
             shadowRadius: 0,
             shadowOffset: {
@@ -39,16 +41,11 @@ const Navigator = () => {
             },
             elevation: 0,
           },
-          headerTintColor: "#333",
+          headerTintColor: theme.fg,
           animationEnabled: true,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
       >
-        {/* <Stack.Screen
-          name="RecycleTestComponent"
-          component={RecycleTestComponent}
-          options={{ title: "" }}
-        /> */}
         {!!authState.auth_token ? (
           <>
             <Stack.Screen
