@@ -22,9 +22,10 @@ import { CommonActions, useNavigation } from "@react-navigation/core";
 import { authActions } from "../slices/authSlice";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StackParamList } from "../navigator";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Touchable from "../components/touchable";
 import { useTheme } from "../contexts/theme/context";
+import { RootState } from "../store/store";
 
 interface Props {
   navigation: StackNavigationProp<StackParamList, "Home">;
@@ -34,6 +35,7 @@ const Home: FC<Props> = ({ navigation }) => {
   const { isLoading, error, data, refetch } = useQuery("channels", () =>
     getChannels()
   );
+  const authState = useSelector((state: RootState) => state.auth);
   const { navigate, reset } = useNavigation();
   const dispatch = useDispatch();
   const { theme, toggleTheme } = useTheme();
@@ -126,7 +128,14 @@ const Home: FC<Props> = ({ navigation }) => {
             color={theme.fg}
           />
         </Touchable>
-        <TouchableOpacity onPress={logout}>
+        <TouchableOpacity
+          onPress={() =>
+            navigate("UserProfile", {
+              user_id: authState.user_profile?.user_id,
+              user: authState.user_profile,
+            })
+          }
+        >
           <Image
             source={{
               uri:

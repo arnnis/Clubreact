@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { LoginResult, UserProfile } from "../types";
+import { LoginUserProfile, LoginResult } from "../models/user";
 
 export interface AuthState {
-  user_profile: UserProfile | null;
+  user_profile: LoginUserProfile | null;
   access_token: string | null;
   auth_token: string | null;
   refresh_token: string | null;

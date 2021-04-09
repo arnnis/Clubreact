@@ -11,13 +11,15 @@ import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import Room from "./screens/room";
 import { useTheme } from "./contexts/theme/context";
+import UserProfile from "./screens/user-profile";
+import { User } from "./models/channel";
 
 export type StackParamList = {
   Login: undefined;
   VerificationCode: { phonenumber: string };
   Home: undefined;
   Room: { channel_id: number; channel: string };
-  RecycleTestComponent: { channel_id: number; channel: string };
+  UserProfile: { user_id: number; user: User };
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -56,6 +58,11 @@ const Navigator = () => {
             <Stack.Screen
               name="Room"
               component={Room}
+              options={{ title: "" }}
+            />
+            <Stack.Screen
+              name="UserProfile"
+              component={UserProfile}
               options={{ title: "" }}
             />
           </>
