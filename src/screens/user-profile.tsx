@@ -19,6 +19,7 @@ import { APIResult } from "../models/api";
 import { UserProfile } from "../models/user";
 import { StackParamList } from "../navigator";
 import req from "../utils/req";
+import dayjs from "dayjs";
 
 interface Props {
   route: RouteProp<StackParamList, "UserProfile">;
@@ -43,11 +44,12 @@ const UserProfileScreen: FC<Props> = ({ route }) => {
   };
 
   return (
-    <Screen style={styles.container}>
+    <Screen>
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={refetch} />
         }
+        contentContainerStyle={styles.container}
       >
         <Image
           source={{ uri: data?.photo_url ?? defaultAvatar }}
@@ -115,7 +117,7 @@ const UserProfileScreen: FC<Props> = ({ route }) => {
           />
           <Flex style={{ marginLeft: 8 }}>
             <Text style={[styles.joinDate, { color: theme.fg2 }]}>
-              Joined {data?.time_created}
+              Joined {dayjs(data?.time_created).format("MMM DD, YYYY")}
             </Text>
             <Text style={[styles.inviter, { color: theme.fg2 }]}>
               Nominated by{" "}
