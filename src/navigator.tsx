@@ -9,7 +9,6 @@ import VerificationCode from "./screens/verification-code";
 import Home from "./screens/home";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
-
 import Room from "./screens/room";
 
 export type StackParamList = {

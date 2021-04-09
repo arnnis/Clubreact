@@ -1,155 +1,81 @@
-import { RouteProp } from "@react-navigation/native";
-import React, { Component } from "react";
-import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Screen from "../components/screen";
 import { Channel, User } from "../models/channel";
 import { StackParamList } from "../navigator";
 import req from "../utils/req";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { withRtc, WithRtcProp } from "../contexts/rtcContext";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { useRtc } from "../contexts/rtcContext";
+import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import PubNub from "pubnub";
-import {
-  DataProvider,
-  LayoutProvider,
-  RecyclerListView,
-} from "recyclerlistview";
-import Flex from "../components/flex";
-import { StackNavigationProp } from "@react-navigation/stack";
+import FastImage from "react-native-fast-image";
 
-let { width } = Dimensions.get("window");
-const ViewTypes = {
-  ROOM_TITLE: 0,
-  TRIPLE: 1,
-  QUAD: 2,
-  SECTION_TITLE: 3,
-};
-
-interface Props extends WithRtcProp, ReturnType<typeof mapStateToProps> {
+interface Props {
   route: RouteProp<StackParamList, "Room">;
-  navigation: StackNavigationProp<StackParamList, "Room">;
 }
 
-interface State {
-  dataProvider: DataProvider;
-  speakingUsers: number[];
-  loading: boolean;
-  channel: Channel | null;
-}
-
-class RoomRecyclerClass extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      dataProvider: new DataProvider(
-        (r1, r2) => r1.user_id !== r2.user_id
-      ).cloneWithRows([]),
-      speakingUsers: [],
-      loading: false,
-      channel: null,
+const Room: FC<Props> = ({ route }) => {
+  const [channel, setChannel] = useState<Channel | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { engine } = useRtc();
+  const pubnub = useRef<PubNub | null>(null);
+  const [speakingUsers, setSpeakingUsers] = useState<number[]>([]);
+  useEffect(() => {
+    // getRoom();
+    joinRoom();
+    return () => {
+      leaveRoom();
     };
-  }
+  }, []);
+  const { goBack } = useNavigation();
+  const authState = useSelector((state: RootState) => state.auth);
 
-  layoutProvider = new LayoutProvider(
-    (index) => {
-      let data = this.state.dataProvider.getDataForIndex(index);
-      // console.log("index", index, "data", data);
-      if (data["type"] === "room_title") {
-        return ViewTypes.ROOM_TITLE;
-      } else if (data["type"] === "title") {
-        return ViewTypes.SECTION_TITLE;
-      } else if (data.is_speaker || data.is_followed_by_speaker) {
-        return ViewTypes.TRIPLE;
-      } else {
-        return ViewTypes.QUAD;
-      }
-    },
-    (type, dim) => {
-      switch (type) {
-        case ViewTypes.ROOM_TITLE:
-          dim.width = width;
-          dim.height = 64;
-          break;
-        case ViewTypes.TRIPLE:
-          dim.width = width / 3 - 12;
-          dim.height = 128;
-          break;
-        case ViewTypes.QUAD:
-          dim.width = width / 4 - 8;
-          dim.height = 128;
-          break;
+  const getRoom = async () => {
+    setLoading(true);
+    const res = await req("/get_channel", {
+      method: "POST",
+      body: {
+        channel_id: route.params.channel_id,
+        channel: route.params.channel,
+      },
+    });
+    const resJson: Channel = await res.json();
+    setChannel(resJson);
+    setLoading(false);
+    return resJson;
+  };
 
-        case ViewTypes.SECTION_TITLE:
-          dim.width = width;
-          dim.height = 40;
-          break;
-        default:
-          dim.width = 0;
-          dim.height = 0;
-      }
-    }
-  );
-
-  pubnub: null | PubNub = null;
-
-  componentDidMount() {
-    this.joinRoom();
-  }
-
-  componentWillUnmount() {
-    this.leaveRoom();
-  }
-
-  componentDidUpdate(prevProps: Props, prevState: State) {
-    if (
-      prevState.channel?.users?.length !== this.state.channel?.users?.length
-    ) {
-      this.setState({
-        dataProvider: this.state.dataProvider.cloneWithRows(
-          this.normalizeUsersList(this.state.channel?.users ?? [])
-        ),
-      });
-    }
-  }
-
-  joinRoom = async () => {
-    this.setState({ loading: true });
+  const joinRoom = async () => {
+    setLoading(true);
     const res = await req("/join_channel", {
       method: "POST",
       body: {
-        channel: this.props.route.params.channel,
+        channel: route.params.channel,
         attribution_source: "feed",
         attribution_details: "eyJpc19leHBsb3JlIjpmYWxzZSwicmFuayI6MX0=",
       },
     });
     const resJson: Channel = await res.json();
     console.log("joined channel result", resJson);
-    if (resJson.success === false) {
-      toast?.show(resJson.error_message, { type: "normal", duration: 8000 });
-      this.props.navigation.goBack();
-      return;
-    }
-    await this.setState({
-      channel: resJson,
-      loading: false,
-    });
-    this.initRTC(resJson.token);
-    this.initPubnub(resJson);
-
+    setLoading(false);
+    setChannel(resJson);
+    initRTC(resJson.token);
+    initPubnub(resJson);
     return resJson;
   };
 
-  leaveRoom = async () => {
-    this.props.rtc?.engine?.leaveChannel();
-    this.props.rtc?.engine?.removeAllListeners();
-    this.pubnub?.unsubscribeAll();
-    this.pubnub?.stop();
+  const leaveRoom = async () => {
+    engine?.leaveChannel();
+    engine?.removeAllListeners();
+    pubnub.current?.unsubscribeAll();
+    pubnub.current?.stop();
     const res = await req("/leave_channel", {
       method: "POST",
       body: {
-        channel: this.props.route.params.channel,
+        channel: route.params.channel,
       },
     });
     const resJson = await res.json();
@@ -158,113 +84,9 @@ class RoomRecyclerClass extends Component<Props, State> {
     return resJson;
   };
 
-  normalizeUsersList = (users: User[]) => {
-    const speakers =
-      users.filter((user) => user.is_speaker && !user.is_followed_by_speaker) ??
-      [];
-    const followedBySpeakers =
-      users.filter((user) => !user.is_speaker && user.is_followed_by_speaker) ??
-      [];
-    const audience =
-      users.filter(
-        (user) => !user.is_speaker && !user.is_followed_by_speaker
-      ) ?? [];
-    let res = [];
-    res = [{ type: "room_title", title: this.state.channel?.topic }];
+  const initRTC = async (token: string | undefined) => {
+    joinChannel(token);
 
-    if (speakers.length > 0) {
-      res = [...res, ...speakers];
-    }
-
-    if (followedBySpeakers.length > 0) {
-      res = [
-        ...res,
-        { type: "title", title: "Followed by speakers" },
-        ...followedBySpeakers,
-      ];
-    }
-
-    if (audience.length > 0) {
-      res = [
-        ...res,
-        { type: "title", title: "Audience", num: audience.length },
-        ...audience,
-      ];
-    }
-    console.log("normalized users", res);
-    return res;
-  };
-
-  initPubnub = (_channel: Channel) => {
-    console.log("pubnub token", _channel.pubnub_token);
-    this.pubnub = new PubNub({
-      publishKey: "pub-c-6878d382-5ae6-4494-9099-f930f938868b",
-      subscribeKey: "sub-c-a4abea84-9ca3-11ea-8e71-f2b83ac9263d",
-      authKey: _channel.pubnub_token,
-      uuid: this.props.authState.user_profile?.user_id.toString(),
-      origin: "clubhouse.pubnub.com",
-      presenceTimeout: _channel.pubnub_heartbeat_value,
-      heartbeatInterval: _channel?.pubnub_heartbeat_interval,
-    });
-
-    this.pubnub.addListener({
-      message: this.handlePubnubMessage,
-      status: (event) => console.log("pubnub status", event),
-    });
-
-    this.pubnub.subscribe({
-      channels: [
-        "users." + this.props.authState.user_profile?.user_id,
-        "channel_user." +
-          _channel.channel +
-          "." +
-          this.props.authState.user_profile?.user_id,
-        "channel_all." + _channel.channel,
-      ],
-    });
-  };
-
-  handlePubnubMessage = (msg: any) => {
-    console.log("pubnub message:", msg);
-    const { message } = msg;
-    if (message.channel !== this.props.route.params.channel) return;
-    if (message.action === "join_channel") {
-      this.onPubnubUserJoined(message);
-    }
-    if (message.action === "leave_channel") {
-      this.onPubnubUserLeaved(message);
-    }
-  };
-
-  onPubnubUserJoined = async (message: any) => {
-    const user = message.user_profile;
-    // @ts-ignore
-
-    this.setState({
-      channel: {
-        ...this.state.channel,
-        users: [...(this.state.channel?.users ?? []), user],
-      },
-    });
-  };
-
-  onPubnubUserLeaved = (message: any) => {
-    this.setState({
-      channel: {
-        ...this.state.channel,
-        users:
-          this.state.channel?.users?.filter(
-            (u) => u.user_id !== message.user_id
-          ) ?? [],
-      },
-    });
-  };
-
-  initRTC = async (token: string | undefined) => {
-    this.joinChannel(token);
-
-    const engine = this.props.rtc.engine;
-    engine?.setDefaultAudioRoutetoSpeakerphone(true);
     engine?.addListener("Warning", (warn) => {
       console.log("Warning", warn);
     });
@@ -292,28 +114,87 @@ class RoomRecyclerClass extends Component<Props, State> {
 
     engine?.addListener("AudioVolumeIndication", (speakers) => {
       console.log("loadest spkears", speakers);
-      this.setState({ speakingUsers: speakers.map((s) => s.uid) });
+      setSpeakingUsers(speakers.map((s) => s.uid));
     });
   };
 
-  joinChannel = async (token: string | undefined) => {
+  const joinChannel = async (token: string | undefined) => {
     // Join Channel using null token and channel name
     console.log("channel token", token);
-    await this.props.rtc?.engine?.joinChannel(
+    await engine?.joinChannel(
       token,
-      this.props.route.params.channel,
+      route.params.channel,
       null,
-      this.props.authState.user_profile?.user_id ?? 0
+      authState.user_profile?.user_id ?? 0
     );
   };
 
-  renderUser = (user: User, extendedState: any) => {
+  const initPubnub = (_channel: Channel) => {
+    console.log("pubnub token", _channel.pubnub_token);
+    pubnub.current = new PubNub({
+      publishKey: "pub-c-6878d382-5ae6-4494-9099-f930f938868b",
+      subscribeKey: "sub-c-a4abea84-9ca3-11ea-8e71-f2b83ac9263d",
+      authKey: _channel.pubnub_token,
+      uuid: authState.user_profile?.user_id.toString(),
+      origin: "clubhouse.pubnub.com",
+      presenceTimeout: _channel.pubnub_heartbeat_value,
+      heartbeatInterval: channel?.pubnub_heartbeat_interval,
+    });
+
+    pubnub.current.addListener({
+      message: handlePubnubMessage,
+      status: (event) => console.log("pubnub status", event),
+    });
+
+    pubnub.current.subscribe({
+      channels: [
+        "users." + authState.user_profile?.user_id,
+        "channel_user." +
+          _channel.channel +
+          "." +
+          authState.user_profile?.user_id,
+        "channel_all." + _channel.channel,
+      ],
+    });
+  };
+
+  const handlePubnubMessage = (msg: any) => {
+    console.log("pubnub message:", msg);
+    const { message } = msg;
+    if (message.channel !== route.params.channel) return;
+    if (message.action === "join_channel") {
+      onPubnubUserJoined(message);
+    }
+    if (message.action === "leave_channel") {
+      onPubnubUserLeaved(message);
+    }
+  };
+
+  const onPubnubUserJoined = (message: any) => {
+    const user = message.user_profile;
+    // @ts-ignore
+    setChannel((prevState) => ({
+      ...prevState,
+      users: [...(prevState?.users ?? []), user],
+    }));
+  };
+
+  const onPubnubUserLeaved = (message: any) => {
+    // @ts-ignore
+    setChannel((prevState) => ({
+      ...prevState,
+      users:
+        prevState?.users?.filter((u) => u.user_id !== message.user_id) ?? [],
+    }));
+  };
+
+  const renderUser = (user: User) => {
     const isAudience = !user.is_speaker && !user.is_followed_by_speaker;
-    const isSpeaking = extendedState?.speakingUsers?.includes(user.user_id);
+    const isSpeaking = speakingUsers.includes(user.user_id);
     return (
-      <View style={[styles.user]}>
+      <View style={[styles.user, isAudience && styles.userSmall]}>
         <View style={isSpeaking && styles.userAvatarSpeaking}>
-          <Image
+          <FastImage
             source={{
               uri:
                 user.photo_url ??
@@ -333,69 +214,86 @@ class RoomRecyclerClass extends Component<Props, State> {
     );
   };
 
-  rowRenderer = (type: any, data: any, index: number, extendedState: any) => {
-    //You can return any view here, CellContainer has no special significance
-    switch (type) {
-      case ViewTypes.ROOM_TITLE:
-        return (
-          <Flex style={{ flex: 1, paddingHorizontal: 16 }} justify="center">
-            <Text style={styles.topic}>{this.state.channel?.topic}</Text>
-          </Flex>
-        );
-      case ViewTypes.TRIPLE:
-        return this.renderUser(data, extendedState);
-      case ViewTypes.QUAD:
-        return this.renderUser(data, extendedState);
+  const speakers = useMemo(
+    () => channel?.users.filter((user) => user.is_speaker),
+    [channel?.users.length]
+  );
+  const followedBySpeakers = useMemo(
+    () => channel?.users.filter((user) => user.is_followed_by_speaker),
+    [channel?.users.length]
+  );
+  const audience = useMemo(
+    () =>
+      channel?.users.filter(
+        (user) => !user.is_speaker && !user.is_followed_by_speaker
+      ),
+    [channel?.users.length]
+  );
 
-      case ViewTypes.SECTION_TITLE:
-        return (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-            }}
-          >
-            <Text style={styles.sectionTitle}>
-              {data.title} {data["num"] ? `( ${data["num"]} )` : ""}
-            </Text>
-          </View>
-        );
-      default:
-        return null;
-    }
-  };
+  const renderItem = ({ item }: any) => renderUser(item);
 
-  render() {
-    return (
-      <Screen>
-        <View style={styles.body}>
-          {!this.state.loading && (
-            <RecyclerListView
-              layoutProvider={this.layoutProvider}
-              dataProvider={this.state.dataProvider}
-              rowRenderer={this.rowRenderer}
-              extendedState={{ speakingUsers: this.state.speakingUsers }}
-              renderAheadOffset={1000}
-            />
-          )}
+  return (
+    <Screen>
+      <FlatList
+        contentContainerStyle={styles.body}
+        ListHeaderComponent={
+          <>
+            <Text style={styles.topic}>{channel?.topic}</Text>
+            <View style={styles.usersContainer}>
+              {speakers?.map(renderUser)}
+            </View>
+            <Text style={styles.sectionTitle}>Followed by speakers</Text>
+            <View style={styles.usersContainer}>
+              {followedBySpeakers?.map(renderUser)}
+            </View>
+          </>
+        }
+        data={audience}
+        renderItem={renderItem}
+        numColumns={4}
+        keyExtractor={(item) => item.user_id.toString()}
+        removeClippedSubviews
+      />
+      {/* <ScrollView
+        contentContainerStyle={styles.body}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={getRoom} />
+        }
+        removeClippedSubviews={Platform.OS === "android"}
+      >
+        {!loading && (
+          <>
+            <Text style={styles.topic}>{channel?.topic}</Text>
+            
+            <View style={styles.usersContainer}>
+              {speakers?.map(renderUser)}
+            </View>
+            <Text style={styles.sectionTitle}>Followed by speakers</Text>
+            <View style={styles.usersContainer}>
+              {followedBySpeakers?.map(renderUser)}
+            </View>
+            <Text style={styles.sectionTitle}>Audience</Text>
+            <View style={styles.usersContainer}>
+              {audience?.map(renderUser)}
+            </View>
+          </>
+        )}
+      </ScrollView> */}
+      <View style={styles.footer}>
+        <TouchableOpacity style={styles.leaveButton} onPress={goBack}>
+          <Text style={styles.leaveButtonTitle}>✌️ Leave quietly</Text>
+        </TouchableOpacity>
+        <View style={styles.raiseHandButton}>
+          <MaterialCommunityIcons
+            name="hand-right"
+            size={25}
+            style={{ marginRight: 2 }}
+          />
         </View>
-
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.leaveButton} onPress={() => {}}>
-            <Text style={styles.leaveButtonTitle}>✌️ Leave quietly</Text>
-          </TouchableOpacity>
-          <View style={styles.raiseHandButton}>
-            <MaterialCommunityIcons
-              name="hand-right"
-              size={25}
-              style={{ marginRight: 2 }}
-            />
-          </View>
-        </View>
-      </Screen>
-    );
-  }
-}
+      </View>
+    </Screen>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -406,9 +304,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 40,
     borderTopLeftRadius: 40,
     marginTop: 16,
+    padding: 24,
     minHeight: "100%",
-    paddingLeft: 16,
-    paddingBottom: 16,
   },
   topic: {
     fontFamily: "Nunito-Bold",
@@ -429,9 +326,9 @@ const styles = StyleSheet.create({
   },
 
   user: {
-    flex: 1,
+    width: 100 / 3 + "%",
     alignItems: "center",
-    paddingTop: 16,
+    marginBottom: 24,
   },
   userSmall: {
     width: 100 / 4 + "%",
@@ -501,8 +398,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state: RootState) => ({
-  authState: state.auth,
-});
-
-export default connect(mapStateToProps)(withRtc(RoomRecyclerClass));
+export default Room;
