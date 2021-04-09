@@ -75,22 +75,36 @@ const UserProfileScreen: FC<Props> = ({ route }) => {
           </Text>
         </Flex>
         <Text style={[styles.bio, { color: theme.fg2 }]}>{data?.bio}</Text>
-        <Flex direction="row" style={{ marginTop: 16 }}>
-          <Text style={[styles.followCount, { color: theme.fg2 }]}>
-            <MaterialCommunityIcons name="twitter" color="#5B549F" size={20} />{" "}
-            {data?.twitter}
-          </Text>
-          <Text
-            style={[styles.followCount, { color: theme.fg2, marginLeft: 16 }]}
-          >
-            <MaterialCommunityIcons
-              name="instagram"
-              color="#5B549F"
-              size={20}
-            />{" "}
-            {data?.instagram}
-          </Text>
-        </Flex>
+        {data?.twitter ||
+          (data?.instagram && (
+            <Flex direction="row" style={{ marginTop: 16 }}>
+              {data?.twitter && (
+                <Text
+                  style={[
+                    styles.followCount,
+                    { color: theme.fg2, marginRight: 16 },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name="twitter"
+                    color="#5B549F"
+                    size={20}
+                  />{" "}
+                  {data?.twitter}
+                </Text>
+              )}
+              {data?.instagram && (
+                <Text style={[styles.followCount, { color: theme.fg2 }]}>
+                  <MaterialCommunityIcons
+                    name="instagram"
+                    color="#5B549F"
+                    size={20}
+                  />{" "}
+                  {data?.instagram}
+                </Text>
+              )}
+            </Flex>
+          ))}
 
         <View style={styles.inviterContainer}>
           <Image

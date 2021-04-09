@@ -201,6 +201,7 @@ const Room: FC<Props> = ({ route }) => {
         onPress={() =>
           navigate("UserProfile", { user_id: user.user_id, user: user })
         }
+        key={user.user_id.toString()}
       >
         <View style={isSpeaking && styles.userAvatarSpeaking}>
           <FastImage
@@ -232,7 +233,10 @@ const Room: FC<Props> = ({ route }) => {
     [channel?.users.length]
   );
   const followedBySpeakers = useMemo(
-    () => channel?.users.filter((user) => user.is_followed_by_speaker),
+    () =>
+      channel?.users.filter(
+        (user) => !user.is_speaker && user.is_followed_by_speaker
+      ),
     [channel?.users.length]
   );
   const audience = useMemo(
@@ -264,7 +268,12 @@ const Room: FC<Props> = ({ route }) => {
               <View style={styles.usersContainer}>
                 {followedBySpeakers?.map(renderUser)}
               </View>
-              <Text style={[styles.sectionTitle, { color: theme.fg2 }]}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  { marginBottom: 16, color: theme.fg2 },
+                ]}
+              >
                 Audience ({audience?.length})
               </Text>
             </>
