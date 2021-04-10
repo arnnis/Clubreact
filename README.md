@@ -1,6 +1,6 @@
-# Clubhouse Client
+# Clubhouse app
 
-Unofficial Clubhouse client, Written in React Native.
+Unofficial Clubhouse app, Written in React Native.
 
 ## Screenshots
 
