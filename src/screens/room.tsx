@@ -1,164 +1,36 @@
 import { RouteProp, useNavigation } from "@react-navigation/native";
-import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { RefreshControl, StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Screen from "../components/screen";
 import { Channel, User } from "../models/channel";
 import { StackParamList } from "../navigator";
-import req from "../utils/req";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import { useRtc } from "../contexts/rtcContext";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
-import PubNub from "pubnub";
 import FastImage from "react-native-fast-image";
 import { useTheme } from "../contexts/theme/context";
 import defaultAvatar from "../assets/default-avatar";
 import Touchable from "../components/touchable";
+import { useRoom } from "../contexts/room/context";
 
 interface Props {
   route: RouteProp<StackParamList, "Room">;
 }
 
 const Room: FC<Props> = ({ route }) => {
-  const [channel, setChannel] = useState<Channel | null>(null);
-  const [loading, setLoading] = useState(false);
-  const { engine } = useRtc();
-  const pubnub = useRef<PubNub | null>(null);
-  const [speakingUsers, setSpeakingUsers] = useState<number[]>([]);
+  const { room, loading, rtc, pubnub, join, leave, speakingUsers } = useRoom();
+  const [isMount, setIsMount] = useState(false);
   useEffect(() => {
-    // getRoom();
-    joinRoom();
-    return () => {
-      leaveRoom();
-    };
+    join && join(route.params.channel);
+    initPubnub();
+    setIsMount(true);
   }, []);
   const { goBack, navigate } = useNavigation();
-  const authState = useSelector((state: RootState) => state.auth);
   const { theme } = useTheme();
 
-  const getRoom = async () => {
-    setLoading(true);
-    const res = await req("/get_channel", {
-      method: "POST",
-      body: {
-        channel_id: route.params.channel_id,
-        channel: route.params.channel,
-      },
-    });
-    const resJson: Channel = await res.json();
-    setChannel(resJson);
-    setLoading(false);
-    return resJson;
-  };
-
-  const joinRoom = async () => {
-    setLoading(true);
-    const res = await req("/join_channel", {
-      method: "POST",
-      body: {
-        channel: route.params.channel,
-        attribution_source: "feed",
-        attribution_details: "eyJpc19leHBsb3JlIjpmYWxzZSwicmFuayI6MX0=",
-      },
-    });
-    const resJson: Channel = await res.json();
-    console.log("joined channel result", resJson);
-    setLoading(false);
-    setChannel(resJson);
-    initRTC(resJson.token);
-    initPubnub(resJson);
-    return resJson;
-  };
-
-  const leaveRoom = async () => {
-    engine?.leaveChannel();
-    engine?.removeAllListeners();
-    pubnub.current?.unsubscribeAll();
-    pubnub.current?.stop();
-    const res = await req("/leave_channel", {
-      method: "POST",
-      body: {
-        channel: route.params.channel,
-      },
-    });
-    const resJson = await res.json();
-
-    console.log("leave channel result", resJson);
-    return resJson;
-  };
-
-  const initRTC = async (token: string | undefined) => {
-    joinChannel(token);
-
-    engine?.addListener("Warning", (warn) => {
-      console.log("Warning", warn);
-    });
-
-    engine?.addListener("Warning", (warn) => {
-      console.log("Warning", warn);
-    });
-
-    engine?.addListener("Error", (err) => {
-      console.log("Error", err);
-    });
-
-    engine?.addListener("UserJoined", (uid, elapsed) => {
-      console.log("UserJoined", uid, elapsed);
-    });
-
-    engine?.addListener("UserOffline", (uid, reason) => {
-      console.log("UserOffline", uid, reason);
-    });
-
-    // If Local user joins RTC channel
-    engine?.addListener("JoinChannelSuccess", (channel, uid, elapsed) => {
-      console.log("JoinChannelSuccess", channel, uid, elapsed);
-    });
-
-    engine?.addListener("AudioVolumeIndication", (speakers) => {
-      console.log("loadest spkears", speakers);
-      setSpeakingUsers(speakers.map((s) => s.uid));
-    });
-  };
-
-  const joinChannel = async (token: string | undefined) => {
-    // Join Channel using null token and channel name
-    console.log("channel token", token);
-    await engine?.joinChannel(
-      token,
-      route.params.channel,
-      null,
-      authState.user_profile?.user_id ?? 0
-    );
-  };
-
-  const initPubnub = (_channel: Channel) => {
-    console.log("pubnub token", _channel.pubnub_token);
-    pubnub.current = new PubNub({
-      publishKey: "pub-c-6878d382-5ae6-4494-9099-f930f938868b",
-      subscribeKey: "sub-c-a4abea84-9ca3-11ea-8e71-f2b83ac9263d",
-      authKey: _channel.pubnub_token,
-      uuid: authState.user_profile?.user_id.toString(),
-      origin: "clubhouse.pubnub.com",
-      presenceTimeout: _channel.pubnub_heartbeat_value,
-      heartbeatInterval: channel?.pubnub_heartbeat_interval,
-    });
-
-    pubnub.current.addListener({
+  const initPubnub = () => {
+    pubnub?.addListener({
       message: handlePubnubMessage,
       status: (event) => console.log("pubnub status", event),
-    });
-
-    pubnub.current.subscribe({
-      channels: [
-        "users." + authState.user_profile?.user_id,
-        "channel_user." +
-          _channel.channel +
-          "." +
-          authState.user_profile?.user_id,
-        "channel_all." + _channel.channel,
-      ],
     });
   };
 
@@ -229,22 +101,22 @@ const Room: FC<Props> = ({ route }) => {
   };
 
   const speakers = useMemo(
-    () => channel?.users.filter((user) => user.is_speaker),
-    [channel?.users.length]
+    () => room?.users.filter((user) => user.is_speaker),
+    [room?.users.length]
   );
   const followedBySpeakers = useMemo(
     () =>
-      channel?.users.filter(
+      room?.users.filter(
         (user) => !user.is_speaker && user.is_followed_by_speaker
       ),
-    [channel?.users.length]
+    [room?.users.length]
   );
   const audience = useMemo(
     () =>
-      channel?.users.filter(
+      room?.users.filter(
         (user) => !user.is_speaker && !user.is_followed_by_speaker
       ),
-    [channel?.users.length]
+    [room?.users.length]
   );
 
   const renderItem = ({ item }: any) => renderUser(item);
@@ -257,7 +129,7 @@ const Room: FC<Props> = ({ route }) => {
           loading ? null : (
             <>
               <Text style={[styles.topic, { color: theme.fg }]}>
-                {channel?.topic}
+                {room?.topic}
               </Text>
               <View style={styles.usersContainer}>
                 {speakers?.map(renderUser)}
@@ -279,13 +151,13 @@ const Room: FC<Props> = ({ route }) => {
             </>
           )
         }
-        data={audience}
+        data={isMount ? audience : []}
         renderItem={renderItem}
         numColumns={4}
         keyExtractor={(item) => item.user_id.toString()}
         removeClippedSubviews
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={getRoom} />
+          <RefreshControl refreshing={loading} onRefresh={() => {}} />
         }
       />
       {/* <ScrollView
@@ -316,7 +188,11 @@ const Room: FC<Props> = ({ route }) => {
       <View style={styles.footer}>
         <TouchableOpacity
           style={[styles.leaveButton, { backgroundColor: theme.bg2 }]}
-          onPress={goBack}
+          disabled={loading}
+          onPress={() => {
+            leave && leave();
+            goBack();
+          }}
         >
           <Text style={[styles.leaveButtonTitle]}>✌️ Leave quietly</Text>
         </TouchableOpacity>

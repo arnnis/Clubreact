@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Touchable from "../components/touchable";
 import { useTheme } from "../contexts/theme/context";
 import { RootState } from "../store/store";
+import RoomMiniPlayer from "../components/room-mini-player";
 
 interface Props {
   navigation: StackNavigationProp<StackParamList, "Home">;
@@ -154,6 +155,7 @@ const Home: FC<Props> = ({ navigation }) => {
           <RefreshControl refreshing={isLoading} onRefresh={refetch} />
         }
       />
+      <RoomMiniPlayer />
     </Screen>
   );
 };

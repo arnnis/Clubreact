@@ -10,6 +10,7 @@ import { store, persistor } from "./src/store/store";
 import { PersistGate } from "redux-persist/integration/react";
 import RtcProvider from "./src/contexts/rtcContext";
 import { ThemeProvider } from "./src/contexts/theme/provider";
+import { RoomProvider } from "./src/contexts/room/provider";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +21,9 @@ const Root = () => (
         <RtcProvider>
           <ToastProvider>
             <ThemeProvider>
-              <App />
+              <RoomProvider>
+                <App />
+              </RoomProvider>
             </ThemeProvider>
           </ToastProvider>
         </RtcProvider>
