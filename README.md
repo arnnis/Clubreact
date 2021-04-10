@@ -44,12 +44,6 @@ Run the following to start webpack development server:
 yarn web
 ```
 
-To start desktop development server:
-
-```sh
-yarn desktop
-```
-
 To run android:
 
 ```sh
@@ -60,12 +54,6 @@ To run ios:
 
 ```sh
 yarn ios
-```
-
-To build for desktop:
-
-```sh
-yarn desktop:release
 ```
 
 To build for android:
