@@ -9,7 +9,7 @@
     "test": "jest",
     "desktop": "cross-env NODE_ENV=development webpack serve --config ./desktop/webpack.config.renderer.dev.js --color --progress",
     "desktop:release": "yarn web:release && node ./desktop/build.js",
-    "postversion": "react-native-version"
+    "postversion": "react-native-version --never-amend"
   },
   "dependencies": {
     "@expo/webpack-config": "^0.12.65",
@@ -61,5 +61,5 @@
     "preset": "react-native"
   },
   "private": true,
-  "version": "0.1.0"
+  "version": "0.0.0"
 }
