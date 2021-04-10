@@ -6,7 +6,8 @@ Unofficial Clubhouse client with a UI similar to WhatsApp, supports Web, Android
 missing features.**
 
 ## Screenshots
-
+| Light      | Dark      |
+| ---------- | --------- |
 | ![][light] | ![][dark] |
 
 ## Install
