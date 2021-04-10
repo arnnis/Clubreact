@@ -2,6 +2,7 @@ import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { FC } from "react";
 import {
+  ActivityIndicator,
   Image,
   RefreshControl,
   ScrollView,
@@ -60,40 +61,46 @@ const UserProfileScreen: FC<Props> = ({ route }) => {
 
   return (
     <Screen>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
-        }
-        contentContainerStyle={styles.container}
-      >
-        <Image
-          source={{ uri: data?.photo_url ?? defaultAvatar }}
-          style={styles.avatar}
-        />
-        <Text style={[styles.userName, { color: theme.fg }]}>{data?.name}</Text>
-        <Text style={[styles.username, { color: theme.fg2 }]}>
-          @{data?.username}
-        </Text>
-        <Flex direction="row" style={{ marginTop: 16 }}>
-          <Text style={[styles.followCount, { color: theme.fg2 }]}>
-            <Text style={[styles.followCountNumber, { color: theme.fg }]}>
-              {data?.num_followers}
-            </Text>{" "}
-            followers
-          </Text>
-
-          <Text
-            style={[styles.followCount, { marginLeft: 16, color: theme.fg2 }]}
-          >
-            <Text style={[styles.followCountNumber, { color: theme.fg }]}>
-              {data?.num_following}
-            </Text>{" "}
-            followings
-          </Text>
+      {isLoading ? (
+        <Flex justify="center" align="center">
+          <ActivityIndicator size="large" color={theme.fg2} />
         </Flex>
-        <Text style={[styles.bio, { color: theme.fg2 }]}>{data?.bio}</Text>
-        {data?.twitter ||
-          (data?.instagram && (
+      ) : (
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+          }
+          contentContainerStyle={styles.container}
+        >
+          <Image
+            source={{ uri: data?.photo_url ?? defaultAvatar }}
+            style={styles.avatar}
+          />
+          <Text style={[styles.userName, { color: theme.fg }]}>
+            {data?.name}
+          </Text>
+          <Text style={[styles.username, { color: theme.fg2 }]}>
+            @{data?.username}
+          </Text>
+          <Flex direction="row" style={{ marginTop: 16 }}>
+            <Text style={[styles.followCount, { color: theme.fg2 }]}>
+              <Text style={[styles.followCountNumber, { color: theme.fg }]}>
+                {data?.num_followers}
+              </Text>{" "}
+              followers
+            </Text>
+
+            <Text
+              style={[styles.followCount, { marginLeft: 16, color: theme.fg2 }]}
+            >
+              <Text style={[styles.followCountNumber, { color: theme.fg }]}>
+                {data?.num_following}
+              </Text>{" "}
+              followings
+            </Text>
+          </Flex>
+          <Text style={[styles.bio, { color: theme.fg2 }]}>{data?.bio}</Text>
+          {(data?.twitter || data?.instagram) && (
             <Flex direction="row" style={{ marginTop: 16 }}>
               {data?.twitter && (
                 <Text
@@ -121,33 +128,34 @@ const UserProfileScreen: FC<Props> = ({ route }) => {
                 </Text>
               )}
             </Flex>
-          ))}
+          )}
 
-        <View style={styles.inviterContainer}>
-          <Image
-            source={{
-              uri: data?.invited_by_user_profile.photo_url ?? defaultAvatar,
-            }}
-            style={styles.inviterAvatar}
-          />
-          <Flex style={{ marginLeft: 8 }}>
-            <Text style={[styles.joinDate, { color: theme.fg2 }]}>
-              Joined {dayjs(data?.time_created).format("MMM DD, YYYY")}
-            </Text>
-            <Text style={[styles.inviter, { color: theme.fg2 }]}>
-              Nominated by{" "}
-              <Text style={{ color: theme.fg }}>
-                {data?.invited_by_user_profile.name}
+          <View style={styles.inviterContainer}>
+            <Image
+              source={{
+                uri: data?.invited_by_user_profile.photo_url ?? defaultAvatar,
+              }}
+              style={styles.inviterAvatar}
+            />
+            <Flex style={{ marginLeft: 8 }}>
+              <Text style={[styles.joinDate, { color: theme.fg2 }]}>
+                Joined {dayjs(data?.time_created).format("MMM DD, YYYY")}
               </Text>
-            </Text>
-          </Flex>
-        </View>
-        {isCurrentUser && (
-          <Touchable style={styles.button} onPress={logout}>
-            <Text style={styles.buttonTitle}>Logout</Text>
-          </Touchable>
-        )}
-      </ScrollView>
+              <Text style={[styles.inviter, { color: theme.fg2 }]}>
+                Nominated by{" "}
+                <Text style={{ color: theme.fg }}>
+                  {data?.invited_by_user_profile.name}
+                </Text>
+              </Text>
+            </Flex>
+          </View>
+          {isCurrentUser && (
+            <Touchable style={styles.button} onPress={logout}>
+              <Text style={styles.buttonTitle}>Logout</Text>
+            </Touchable>
+          )}
+        </ScrollView>
+      )}
     </Screen>
   );
 };

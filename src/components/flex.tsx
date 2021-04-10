@@ -5,6 +5,7 @@ interface Props extends ViewProps {
   justify?: ViewStyle["justifyContent"];
   align?: ViewStyle["alignItems"];
   direction?: ViewStyle["flexDirection"];
+  flex?: ViewStyle["flex"];
 }
 
 const Flex: FC<Props> = ({
@@ -12,12 +13,18 @@ const Flex: FC<Props> = ({
   align,
   direction,
   style,
+  flex,
   children,
   ...rest
 }) => (
   <View
     style={[
-      { justifyContent: justify, alignItems: align, flexDirection: direction },
+      {
+        flex,
+        justifyContent: justify,
+        alignItems: align,
+        flexDirection: direction,
+      },
       style,
     ]}
     {...rest}
