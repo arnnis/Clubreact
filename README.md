@@ -10,9 +10,9 @@ Unofficial Clubhouse app, Written in React Native.
 
 ## Install
 
-- [Android](https://github.com/arnnis/Sup/releases/latest) - Android apk download
-- [IOS](https://arnnis.github.io/Sup) - No export for ios. You can build it from source.
-- [Web](https://arnnis.github.io/Sup) - Web version using react-native-web & expo-web, `doesn't work because of CORS`.
+- [Android](https://github.com/arnnis/clubreact/releases/latest) - Android apk download
+- [IOS](https://arnnis.github.io/clubreact) - No export for ios. You can build it from source.
+- [Web](https://arnnis.github.io/clubreact) - Web version using react-native-web & expo-web, `doesn't work because of CORS`.
 <!-- - [Windows](https://github.com/arnnis/Sup/releases/latest) - Windows version using electron
 - [Linux](https://github.com/arnnis/Sup/releases/latest) - Linux version using electron -->
 
