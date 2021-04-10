@@ -1,4 +1,4 @@
-# Clubhouse app
+# Clubreact
 
 Unofficial Clubhouse app, Written in React Native.
 
