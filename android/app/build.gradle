@@ -137,6 +137,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+              setProperty("archivesBaseName", "Clubreact-$versionName") // appends version to output apk name.
     }
     splits {
         abi {
