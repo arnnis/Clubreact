@@ -47,10 +47,6 @@ const Home: FC<Props> = ({ navigation }) => {
     return resJson;
   };
 
-  const logout = () => {
-    dispatch(authActions.logout());
-  };
-
   const renderChannel = ({ item, index }: { item: Channel; index: number }) => (
     <Touchable
       key={item.channel}

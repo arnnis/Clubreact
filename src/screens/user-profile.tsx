@@ -20,6 +20,10 @@ import { UserProfile } from "../models/user";
 import { StackParamList } from "../navigator";
 import req from "../utils/req";
 import dayjs from "dayjs";
+import { useRoom } from "../contexts/room/context";
+import { authActions } from "../slices/authSlice";
+import { useDispatch } from "react-redux";
+import Touchable from "../components/touchable";
 
 interface Props {
   route: RouteProp<StackParamList, "UserProfile">;
@@ -32,6 +36,8 @@ const UserProfileScreen: FC<Props> = ({ route }) => {
     () => getUser()
   );
   const { theme } = useTheme();
+  const { leave } = useRoom();
+  const dispatch = useDispatch();
 
   const getUser = async () => {
     const res = await req("/get_profile", {
@@ -41,6 +47,10 @@ const UserProfileScreen: FC<Props> = ({ route }) => {
     const resJson: APIResult<{ user_profile: UserProfile }> = await res.json();
     console.log("user profile", resJson);
     return resJson.user_profile;
+  };
+
+  const logout = () => {
+    dispatch(authActions.logout());
   };
 
   return (
@@ -127,6 +137,10 @@ const UserProfileScreen: FC<Props> = ({ route }) => {
             </Text>
           </Flex>
         </View>
+
+        <Touchable style={styles.button} onPress={logout}>
+          <Text style={styles.buttonTitle}>Logout</Text>
+        </Touchable>
       </ScrollView>
     </Screen>
   );
@@ -176,6 +190,22 @@ const styles = StyleSheet.create({
   },
   inviter: {
     fontFamily: "Nunito-SemiBold",
+  },
+
+  button: {
+    width: 135,
+    backgroundColor: "#5576AB",
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    marginTop: 24,
+    borderRadius: 24,
+  },
+  buttonTitle: {
+    color: "#fff",
+    fontFamily: "Nunito-SemiBold",
+    fontSize: 16,
   },
 });
 

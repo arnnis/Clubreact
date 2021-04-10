@@ -15,6 +15,7 @@ import CountryPicker, {
   Country,
   DEFAULT_THEME,
 } from "react-native-country-picker-modal";
+import { useToast } from "react-native-fast-toast";
 
 const Login = () => {
   const [phonenumber, setPhonenumber] = useState("");
@@ -29,6 +30,8 @@ const Login = () => {
   });
   const { navigate } = useNavigation();
   const [submitting, setSubmitting] = useState(false);
+  const toast = useToast();
+
   const requestCode = async () => {
     let fullPhoneNumber = "";
     if (phonenumber.startsWith("0")) {
@@ -45,8 +48,15 @@ const Login = () => {
       body: { phone_number: fullPhoneNumber },
     });
     console.log(res);
+    if (res.ok) {
+      navigate("VerificationCode", { phonenumber: fullPhoneNumber });
+    } else {
+      const resJson = await res.json();
+      resJson?.error_message && toast?.show(resJson?.error_message);
+      resJson?.is_blocked &&
+        toast?.show("You are blocked from using clubhouse");
+    }
     setSubmitting(false);
-    navigate("VerificationCode", { phonenumber: fullPhoneNumber });
   };
 
   return (
@@ -63,10 +73,17 @@ const Login = () => {
             console.log("selected country", country);
             setCountry(country);
           }}
-          containerButtonStyle={{ marginTop: -6, marginBottom: -8 }}
+          containerButtonStyle={{
+            marginTop: -6,
+            marginBottom: -8,
+            marginRight: -4,
+          }}
           visible={false}
           theme={{ ...DEFAULT_THEME, backgroundColor: "#f2efe4" }}
         />
+        <Text style={{ fontFamily: '"Nunito-Regular', fontSize: 15 }}>
+          +{country.callingCode[0]}
+        </Text>
         <TextInput
           placeholder="Phone Number"
           onChangeText={setPhonenumber}
@@ -76,7 +93,7 @@ const Login = () => {
       </View>
       <TouchableOpacity style={styles.button} onPress={requestCode}>
         {submitting ? (
-          <ActivityIndicator size="small" />
+          <ActivityIndicator size="small" color="#fff" />
         ) : (
           <>
             <Text style={styles.buttonTitle}>Next</Text>
@@ -109,9 +126,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   input: {
-    fontSize: 17,
+    fontSize: 15,
     fontFamily: "Nunito-Regular",
     width: "100%",
+    height: "100%",
+    textAlignVertical: "center",
+    marginTop: 4,
   },
   button: {
     width: 175,

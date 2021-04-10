@@ -13,10 +13,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StackParamList } from "../navigator";
-import { LoginResult } from "../types";
 
 import { useDispatch } from "react-redux";
 import { authActions } from "../slices/authSlice";
+import { ActivityIndicator } from "react-native";
+import { useToast } from "react-native-fast-toast";
+import { LoginResult } from "../models/user";
 
 interface Props {
   route: RouteProp<StackParamList, "VerificationCode">;
@@ -27,9 +29,14 @@ const VerificationCode: FC<Props> = ({ route }) => {
   const [verificationCode, setVerificationCode] = useState("");
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [submitting, setSubmitting] = useState(false);
+  const toast = useToast();
 
   const verifyCode = async () => {
     console.log("phonenumber", route.params.phonenumber);
+    if (!verificationCode)
+      return toast?.show("Please enter the verification code");
+    setSubmitting(true);
     const res = await req("/complete_phone_number_auth", {
       method: "POST",
       body: {
@@ -42,8 +49,13 @@ const VerificationCode: FC<Props> = ({ route }) => {
     if (res.ok) {
       dispatch(authActions.setAuth(resJson));
     } else {
-      alert(resJson.error_message);
+      !resJson.is_verified &&
+        toast?.show(
+          "The code you entered was incorrect, remaining attempts: " +
+            resJson.number_of_attempts_remaining
+        );
     }
+    setSubmitting(false);
   };
 
   return (
@@ -57,8 +69,18 @@ const VerificationCode: FC<Props> = ({ route }) => {
         />
       </View>
       <TouchableOpacity style={styles.button} onPress={verifyCode}>
-        <Text style={styles.buttonTitle}>Next</Text>
-        <MaterialCommunityIcons name="chevron-right" size={22} color="#fff" />
+        {submitting ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <>
+            <Text style={styles.buttonTitle}>Next</Text>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={22}
+              color="#fff"
+            />
+          </>
+        )}
       </TouchableOpacity>
     </Screen>
   );
