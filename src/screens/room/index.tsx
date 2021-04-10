@@ -1,12 +1,6 @@
 import { RouteProp, useNavigation } from "@react-navigation/native";
-import React, { FC, useEffect, useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import React, { FC, useEffect, useMemo } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Screen from "../../components/screen";
 import { User } from "../../models/channel";
@@ -91,7 +85,7 @@ const Room: FC<Props> = ({ route }) => {
                   <Text
                     style={[
                       styles.sectionTitle,
-                      { marginBottom: 16, color: theme.fg2 },
+                      { marginBottom: 24, color: theme.fg2 },
                     ]}
                   >
                     Audience ({audience?.length})
@@ -172,7 +166,6 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 24,
-    marginTop: 16,
   },
   topic: {
     fontFamily: "Nunito-Bold",

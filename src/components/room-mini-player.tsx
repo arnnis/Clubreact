@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     left: 0,
-    height: 72,
+    height: 64,
     backgroundColor: "red",
     borderTopRightRadius: 40,
     borderTopLeftRadius: 40,
@@ -63,8 +63,8 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   avatar: {
-    height: 40,
-    width: 40,
+    height: 36,
+    width: 36,
     borderRadius: 20,
   },
   avatarsContainer: {
