@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     fontFamily: "Nunito-Light",
-    marginTop: "25%",
+    marginTop: 100,
   },
   inputContainer: {
     backgroundColor: "#fff",

@@ -3,14 +3,15 @@
 Unofficial Clubhouse client, Written in React Native.
 
 ## Screenshots
-| Light theme      | Night theme  |
-| ---------- | --------- |
-| ![][light] | ![][dark] |
+
+| Light theme | Night theme |
+| ----------- | ----------- |
+| ![][light]  | ![][dark]   |
 
 ## Install
 
 - [Android](https://github.com/arnnis/Sup/releases/latest) - Android apk
-- [Web](https://arnnis.github.io/Sup) - Web version using react-native-web
+- [Web (WIP)](https://arnnis.github.io/Sup) - Web version using react-native-web & expo-web, work in progress
 - [Windows](https://github.com/arnnis/Sup/releases/latest) - Windows version using electron
 - [Linux](https://github.com/arnnis/Sup/releases/latest) - Linux version using electron
 
@@ -33,7 +34,6 @@ Unofficial Clubhouse client, Written in React Native.
 - [ ] Update bio
 - [ ] Upload avatar
 - [ ] Explore page
-
 
 ## Contributing
 

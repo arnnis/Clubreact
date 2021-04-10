@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { SafeAreaView, StyleSheet, ViewProps } from "react-native";
+import { Platform, SafeAreaView, StyleSheet, ViewProps } from "react-native";
 import { useTheme } from "../contexts/theme/context";
 
 interface Props extends ViewProps {}
