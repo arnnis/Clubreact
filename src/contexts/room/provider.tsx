@@ -10,7 +10,7 @@ import { APIResult } from "../../models/api";
 import { roomActions } from "../../slices/roomSlice";
 
 export const RoomProvider: FC = ({ children }) => {
-  const [room, setChannel] = useState<Channel | null>(null);
+  const room = useSelector((state: RootState) => state.room.currentRoom);
   const [loading, setLoading] = useState(false);
   const { engine } = useRtc();
   const [pubnub, setPubnub] = useState<PubNub | null>(null);
@@ -34,15 +34,15 @@ export const RoomProvider: FC = ({ children }) => {
     const resJson: APIResult<Channel> = await res.json();
     console.log("joined channel result", resJson);
     setLoading(false);
-    setChannel(resJson);
+    dispatch(roomActions.setRoom(resJson));
     initRTC(resJson);
-    // initPubnub(resJson);
+    initPubnub(resJson);
     return resJson;
   };
 
   const leaveRoom = async () => {
     const _channel = room?.channel;
-    setChannel(null);
+    dispatch(roomActions.setRoom(null));
     engine?.leaveChannel();
     engine?.removeAllListeners();
     pubnub?.unsubscribeAll();
@@ -130,10 +130,36 @@ export const RoomProvider: FC = ({ children }) => {
         "channel_all." + _channel.channel,
       ],
     });
+
+    _pubnub?.addListener({
+      message: handlePubnubMessage,
+      status: (event) => console.log("pubnub status", event),
+    });
+  };
+
+  const handlePubnubMessage = (msg: any) => {
+    console.log("pubnub message:", msg);
+    const { message } = msg;
+    // if (message.channel !== room?.channel) return;
+    if (message.action === "join_channel") {
+      onPubnubUserJoined(message);
+    }
+    if (message.action === "leave_channel") {
+      onPubnubUserLeaved(message);
+    }
+  };
+
+  const onPubnubUserJoined = (message: any) => {
+    const user = message.user_profile;
+
+    dispatch(roomActions.addRoomUser(user));
+  };
+
+  const onPubnubUserLeaved = (message: any) => {
+    dispatch(roomActions.removeRoomUser({ user_id: message.user_id }));
   };
 
   const value: ContextValue = {
-    room: room,
     loading,
     rtc: engine,
     pubnub,

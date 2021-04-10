@@ -24,7 +24,11 @@ const UserCell: FC<Props> = ({ user }) => {
   const isAudience = !user.is_speaker && !user.is_followed_by_speaker;
   return (
     <Touchable
-      style={[styles.user, isAudience && styles.userSmall]}
+      style={[
+        styles.user,
+        { backgroundColor: theme.bg2 },
+        isAudience && styles.userSmall,
+      ]}
       onPress={() =>
         navigate("UserProfile", { user_id: user.user_id, user: user })
       }
@@ -77,6 +81,7 @@ const styles = StyleSheet.create({
   },
   userSmall: {
     width: 100 / 4 + "%",
+    height: 110,
   },
   userName: {
     fontFamily: "Nunito-Bold",

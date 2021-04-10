@@ -9,58 +9,24 @@ import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import { useTheme } from "../../contexts/theme/context";
 import { useRoom } from "../../contexts/room/context";
 import UserCell from "./user-cell";
+import useInteractionManger from "../../utils/useInteractionManager";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 interface Props {
   route: RouteProp<StackParamList, "Room">;
 }
 
 const Room: FC<Props> = ({ route }) => {
-  const { room, loading, rtc, pubnub, join, leave } = useRoom();
-  const [isMount, setIsMount] = useState(false);
+  const { loading, rtc, pubnub, join, leave } = useRoom();
+  const room = useSelector((state: RootState) => state.room.currentRoom);
+  const isMounting = useInteractionManger();
+
   useEffect(() => {
     join && join(route.params.channel);
-    initPubnub();
-    setIsMount(true);
   }, []);
   const { goBack, navigate } = useNavigation();
   const { theme } = useTheme();
-
-  const initPubnub = () => {
-    pubnub?.addListener({
-      message: handlePubnubMessage,
-      status: (event) => console.log("pubnub status", event),
-    });
-  };
-
-  const handlePubnubMessage = (msg: any) => {
-    console.log("pubnub message:", msg);
-    const { message } = msg;
-    if (message.channel !== route.params.channel) return;
-    if (message.action === "join_channel") {
-      onPubnubUserJoined(message);
-    }
-    if (message.action === "leave_channel") {
-      onPubnubUserLeaved(message);
-    }
-  };
-
-  const onPubnubUserJoined = (message: any) => {
-    const user = message.user_profile;
-    // @ts-ignore
-    setChannel((prevState) => ({
-      ...prevState,
-      users: [...(prevState?.users ?? []), user],
-    }));
-  };
-
-  const onPubnubUserLeaved = (message: any) => {
-    // @ts-ignore
-    setChannel((prevState) => ({
-      ...prevState,
-      users:
-        prevState?.users?.filter((u) => u.user_id !== message.user_id) ?? [],
-    }));
-  };
 
   const renderUser = (user: User) => <UserCell user={user} />;
 
@@ -84,6 +50,14 @@ const Room: FC<Props> = ({ route }) => {
   );
 
   const renderItem = ({ item }: any) => renderUser(item);
+
+  const getItemLayout = (data, index) => ({
+    length: 110,
+    offset: 110 * index,
+    index,
+  });
+
+  if (isMounting) return null;
 
   return (
     <Screen>
@@ -117,14 +91,18 @@ const Room: FC<Props> = ({ route }) => {
             </>
           )
         }
-        data={isMount ? audience : []}
+        data={audience}
         renderItem={renderItem}
         numColumns={4}
         keyExtractor={(item) => item.user_id.toString()}
         removeClippedSubviews
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={() => {}} />
+          <RefreshControl
+            refreshing={isMounting || loading}
+            onRefresh={() => {}}
+          />
         }
+        getItemLayout={getItemLayout}
       />
       {/* <ScrollView
         contentContainerStyle={styles.body}
@@ -185,6 +163,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     padding: 24,
     minHeight: "100%",
+    width: "100%",
   },
   topic: {
     fontFamily: "Nunito-Bold",
