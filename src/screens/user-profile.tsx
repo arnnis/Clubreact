@@ -22,8 +22,9 @@ import req from "../utils/req";
 import dayjs from "dayjs";
 import { useRoom } from "../contexts/room/context";
 import { authActions } from "../slices/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Touchable from "../components/touchable";
+import { RootState } from "../store/store";
 
 interface Props {
   route: RouteProp<StackParamList, "UserProfile">;
@@ -38,6 +39,10 @@ const UserProfileScreen: FC<Props> = ({ route }) => {
   const { theme } = useTheme();
   const { leave } = useRoom();
   const dispatch = useDispatch();
+  const isCurrentUser = useSelector(
+    (state: RootState) =>
+      state.auth.user_profile?.user_id === route.params.user_id
+  );
 
   const getUser = async () => {
     const res = await req("/get_profile", {
@@ -137,10 +142,11 @@ const UserProfileScreen: FC<Props> = ({ route }) => {
             </Text>
           </Flex>
         </View>
-
-        <Touchable style={styles.button} onPress={logout}>
-          <Text style={styles.buttonTitle}>Logout</Text>
-        </Touchable>
+        {isCurrentUser && (
+          <Touchable style={styles.button} onPress={logout}>
+            <Text style={styles.buttonTitle}>Logout</Text>
+          </Touchable>
+        )}
       </ScrollView>
     </Screen>
   );
