@@ -1,6 +1,12 @@
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import React, { FC, useEffect, useMemo, useState } from "react";
-import { RefreshControl, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Screen from "../../components/screen";
 import { User } from "../../models/channel";
@@ -57,53 +63,52 @@ const Room: FC<Props> = ({ route }) => {
     index,
   });
 
-  if (isMounting) return null;
-
   return (
     <Screen>
-      <FlatList
-        contentContainerStyle={[styles.body, { backgroundColor: theme.bg2 }]}
-        ListHeaderComponent={
-          loading ? null : (
-            <>
-              <Text style={[styles.topic, { color: theme.fg }]}>
-                {room?.topic}
-              </Text>
-              <View style={styles.usersContainer}>
-                {room?.users?.map((u) => u.is_speaker && renderUser(u))}
-              </View>
-              <Text style={[styles.sectionTitle, { color: theme.fg2 }]}>
-                Followed by speakers
-              </Text>
-              <View style={styles.usersContainer}>
-                {room?.users?.map(
-                  (u) => u.is_followed_by_speaker && renderUser(u)
-                )}
-              </View>
-              <Text
-                style={[
-                  styles.sectionTitle,
-                  { marginBottom: 16, color: theme.fg2 },
-                ]}
-              >
-                Audience ({audience?.length})
-              </Text>
-            </>
-          )
-        }
-        data={audience}
-        renderItem={renderItem}
-        numColumns={4}
-        keyExtractor={(item) => item.user_id.toString()}
-        removeClippedSubviews
-        refreshControl={
-          <RefreshControl
-            refreshing={isMounting || loading}
-            onRefresh={() => {}}
+      <View style={[styles.body, { backgroundColor: theme.bg2 }]}>
+        {loading || isMounting ? (
+          <ActivityIndicator size="large" color={theme.fg2} />
+        ) : (
+          <FlatList
+            contentContainerStyle={[styles.list]}
+            ListHeaderComponent={
+              loading ? null : (
+                <>
+                  <Text style={[styles.topic, { color: theme.fg }]}>
+                    {room?.topic}
+                  </Text>
+                  <View style={styles.usersContainer}>
+                    {room?.users?.map((u) => u.is_speaker && renderUser(u))}
+                  </View>
+                  <Text style={[styles.sectionTitle, { color: theme.fg2 }]}>
+                    Followed by speakers
+                  </Text>
+                  <View style={styles.usersContainer}>
+                    {room?.users?.map(
+                      (u) => u.is_followed_by_speaker && renderUser(u)
+                    )}
+                  </View>
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      { marginBottom: 16, color: theme.fg2 },
+                    ]}
+                  >
+                    Audience ({audience?.length})
+                  </Text>
+                </>
+              )
+            }
+            data={audience}
+            renderItem={renderItem}
+            numColumns={4}
+            keyExtractor={(item) => item.user_id.toString()}
+            removeClippedSubviews
+            getItemLayout={getItemLayout}
           />
-        }
-        getItemLayout={getItemLayout}
-      />
+        )}
+      </View>
+
       {/* <ScrollView
         contentContainerStyle={styles.body}
         refreshControl={
@@ -160,10 +165,14 @@ const styles = StyleSheet.create({
   body: {
     borderTopRightRadius: 40,
     borderTopLeftRadius: 40,
-    marginTop: 16,
-    padding: 24,
     minHeight: "100%",
     width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  list: {
+    padding: 24,
+    marginTop: 16,
   },
   topic: {
     fontFamily: "Nunito-Bold",
