@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
   },
   topic: {
     fontFamily: "Nunito-Regular",
+    flex: 1,
   },
 });
 
