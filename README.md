@@ -7,7 +7,6 @@ missing features.**
 
 ## Screenshots
 
-| ---------- | --------- |
 | ![][light] | ![][dark] |
 
 ## Install
