@@ -60,5 +60,6 @@
   "jest": {
     "preset": "react-native"
   },
-  "private": true
+  "private": true,
+  "version": "0.1.0"
 }

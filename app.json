@@ -4,9 +4,15 @@
   "expo": {
     "name": "clubhouse-app",
     "slug": "clubhouse-app",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "android": {
+      "versionCode": 1
+    },
+    "ios": {
+      "buildNumber": "1"
+    }
   }
 }
