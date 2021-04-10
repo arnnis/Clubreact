@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import PubNub from "pubnub";
 import { Channel } from "../../models/channel";
 import { RootState } from "../../store/store";
@@ -7,14 +7,15 @@ import req from "../../utils/req";
 import { useRtc } from "../rtcContext";
 import { RoomContext, ContextValue } from "./context";
 import { APIResult } from "../../models/api";
+import { roomActions } from "../../slices/roomSlice";
 
 export const RoomProvider: FC = ({ children }) => {
   const [room, setChannel] = useState<Channel | null>(null);
   const [loading, setLoading] = useState(false);
   const { engine } = useRtc();
   const [pubnub, setPubnub] = useState<PubNub | null>(null);
-  const [speakingUsers, setSpeakingUsers] = useState<number[]>([]);
   const authState = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
 
   const joinRoom = async (channel: string) => {
     if (room?.channel === channel) return;
@@ -35,7 +36,7 @@ export const RoomProvider: FC = ({ children }) => {
     setLoading(false);
     setChannel(resJson);
     initRTC(resJson);
-    initPubnub(resJson);
+    // initPubnub(resJson);
     return resJson;
   };
 
@@ -53,8 +54,7 @@ export const RoomProvider: FC = ({ children }) => {
       },
     });
     const resJson = await res.json();
-
-    setSpeakingUsers([]);
+    dispatch(roomActions.setSpeakingUsers([]));
 
     console.log("leave channel result", resJson);
     return resJson;
@@ -63,34 +63,35 @@ export const RoomProvider: FC = ({ children }) => {
   const initRTC = async (_channel: Channel) => {
     joinChannel(_channel);
 
-    engine?.addListener("Warning", (warn) => {
-      console.log("Warning", warn);
-    });
+    // engine?.addListener("Warning", (warn) => {
+    //   console.log("Warning", warn);
+    // });
 
-    engine?.addListener("Warning", (warn) => {
-      console.log("Warning", warn);
-    });
+    // engine?.addListener("Warning", (warn) => {
+    //   console.log("Warning", warn);
+    // });
 
-    engine?.addListener("Error", (err) => {
-      console.log("Error", err);
-    });
+    // engine?.addListener("Error", (err) => {
+    //   console.log("Error", err);
+    // });
 
-    engine?.addListener("UserJoined", (uid, elapsed) => {
-      console.log("UserJoined", uid, elapsed);
-    });
+    // engine?.addListener("UserJoined", (uid, elapsed) => {
+    //   console.log("UserJoined", uid, elapsed);
+    // });
 
-    engine?.addListener("UserOffline", (uid, reason) => {
-      console.log("UserOffline", uid, reason);
-    });
+    // engine?.addListener("UserOffline", (uid, reason) => {
+    //   console.log("UserOffline", uid, reason);
+    // });
 
-    // If Local user joins RTC channel
-    engine?.addListener("JoinChannelSuccess", (channel, uid, elapsed) => {
-      console.log("JoinChannelSuccess", channel, uid, elapsed);
-    });
+    // // If Local user joins RTC channel
+    // engine?.addListener("JoinChannelSuccess", (channel, uid, elapsed) => {
+    //   console.log("JoinChannelSuccess", channel, uid, elapsed);
+    // });
 
     engine?.addListener("AudioVolumeIndication", (speakers) => {
       console.log("loadest spkears", speakers);
-      setSpeakingUsers(speakers.map((s) => s.uid));
+      // setSpeakingUsers(speakers.map((s) => s.uid));
+      dispatch(roomActions.setSpeakingUsers(speakers.map((s) => s.uid)));
     });
   };
 
@@ -138,7 +139,6 @@ export const RoomProvider: FC = ({ children }) => {
     pubnub,
     join: joinRoom,
     leave: leaveRoom,
-    speakingUsers,
   };
 
   return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>;

@@ -2,22 +2,20 @@ import { RouteProp, useNavigation } from "@react-navigation/native";
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { RefreshControl, StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Screen from "../components/screen";
-import { Channel, User } from "../models/channel";
-import { StackParamList } from "../navigator";
+import Screen from "../../components/screen";
+import { User } from "../../models/channel";
+import { StackParamList } from "../../navigator";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
-import FastImage from "react-native-fast-image";
-import { useTheme } from "../contexts/theme/context";
-import defaultAvatar from "../assets/default-avatar";
-import Touchable from "../components/touchable";
-import { useRoom } from "../contexts/room/context";
+import { useTheme } from "../../contexts/theme/context";
+import { useRoom } from "../../contexts/room/context";
+import UserCell from "./user-cell";
 
 interface Props {
   route: RouteProp<StackParamList, "Room">;
 }
 
 const Room: FC<Props> = ({ route }) => {
-  const { room, loading, rtc, pubnub, join, leave, speakingUsers } = useRoom();
+  const { room, loading, rtc, pubnub, join, leave } = useRoom();
   const [isMount, setIsMount] = useState(false);
   useEffect(() => {
     join && join(route.params.channel);
@@ -64,53 +62,19 @@ const Room: FC<Props> = ({ route }) => {
     }));
   };
 
-  const renderUser = (user: User) => {
-    const isAudience = !user.is_speaker && !user.is_followed_by_speaker;
-    const isSpeaking = speakingUsers.includes(user.user_id);
-    return (
-      <Touchable
-        style={[styles.user, isAudience && styles.userSmall]}
-        onPress={() =>
-          navigate("UserProfile", { user_id: user.user_id, user: user })
-        }
-        key={user.user_id.toString()}
-      >
-        <View style={isSpeaking && styles.userAvatarSpeaking}>
-          <FastImage
-            source={{
-              uri: user.photo_url ?? defaultAvatar,
-            }}
-            style={[styles.userAvatar, isAudience && styles.userAvatarSmall]}
-          />
-          {user.is_speaker && (
-            <View
-              style={[styles.userMicContainer, { backgroundColor: theme.bg2 }]}
-            >
-              <MaterialCommunityIcons
-                name="microphone"
-                size={18}
-                color={theme.fg}
-              />
-            </View>
-          )}
-        </View>
+  const renderUser = (user: User) => <UserCell user={user} />;
 
-        <Text style={[styles.userName, { color: theme.fg }]}>{user.name}</Text>
-      </Touchable>
-    );
-  };
-
-  const speakers = useMemo(
-    () => room?.users.filter((user) => user.is_speaker),
-    [room?.users.length]
-  );
-  const followedBySpeakers = useMemo(
-    () =>
-      room?.users.filter(
-        (user) => !user.is_speaker && user.is_followed_by_speaker
-      ),
-    [room?.users.length]
-  );
+  // const speakers = useMemo(
+  //   () => room?.users.filter((user) => user.is_speaker),
+  //   [room?.users.length]
+  // );
+  // const followedBySpeakers = useMemo(
+  //   () =>
+  //     room?.users.filter(
+  //       (user) => !user.is_speaker && user.is_followed_by_speaker
+  //     ),
+  //   [room?.users.length]
+  // );
   const audience = useMemo(
     () =>
       room?.users.filter(
@@ -132,13 +96,15 @@ const Room: FC<Props> = ({ route }) => {
                 {room?.topic}
               </Text>
               <View style={styles.usersContainer}>
-                {speakers?.map(renderUser)}
+                {room?.users?.map((u) => u.is_speaker && renderUser(u))}
               </View>
               <Text style={[styles.sectionTitle, { color: theme.fg2 }]}>
                 Followed by speakers
               </Text>
               <View style={styles.usersContainer}>
-                {followedBySpeakers?.map(renderUser)}
+                {room?.users?.map(
+                  (u) => u.is_followed_by_speaker && renderUser(u)
+                )}
               </View>
               <Text
                 style={[
@@ -236,49 +202,6 @@ const styles = StyleSheet.create({
     color: "#d7d5d8",
     marginLeft: 16,
     fontFamily: "Nunito-Bold",
-  },
-
-  user: {
-    width: 100 / 3 + "%",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  userSmall: {
-    width: 100 / 4 + "%",
-  },
-  userName: {
-    fontFamily: "Nunito-Bold",
-    color: "#4e4b4e",
-    fontSize: 13,
-    marginTop: 8,
-    textAlign: "center",
-  },
-  userAvatar: {
-    borderRadius: 72 / 2.5,
-    width: 72,
-    height: 72,
-  },
-  userAvatarSmall: {
-    borderRadius: 28,
-    width: 54,
-    height: 54,
-  },
-  userAvatarSpeaking: {
-    borderWidth: 3,
-    borderColor: "#CCCBC5",
-    padding: 3,
-    borderRadius: 34,
-  },
-  userMicContainer: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    backgroundColor: "#FEFCFF",
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
   },
 
   footer: {

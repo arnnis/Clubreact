@@ -10,7 +10,6 @@ export interface ContextValue {
   loading: boolean;
   join?(channel: string): Promise<Channel>;
   leave?(): void;
-  speakingUsers: number[];
 }
 
 export const RoomContext = React.createContext({
@@ -18,7 +17,6 @@ export const RoomContext = React.createContext({
   pubnub: null,
   room: null,
   loading: true,
-  speakingUsers: [],
 } as ContextValue);
 
 export const useRoom = () => useContext(RoomContext);

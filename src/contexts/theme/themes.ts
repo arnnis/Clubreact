@@ -8,8 +8,8 @@ export interface Theme {
 
 const defaultTheme: Theme = {
   name: "defaultTheme",
-  bg: "#f2efe4",
-  bg2: "#FEFCFF",
+  bg: "#F0F0E3",
+  bg2: "#FFFFFF",
   fg: "#454245",
   fg2: "#9c9c9c",
 };
