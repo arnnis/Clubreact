@@ -1,10 +1,9 @@
-Unofficial Clubhouse client with a UI similar to WhatsApp, supports Web, Android, Desktop.
+# Clubhouse Client
 
-**Do not use this for work, it's experiemental and you might miss important messages due to bugs and
-missing features.**
+Unofficial Clubhouse client, Written in React Native.
 
 ## Screenshots
-| Light      | Dark      |
+| Light theme      | Night theme  |
 | ---------- | --------- |
 | ![][light] | ![][dark] |
 
@@ -20,28 +19,21 @@ missing features.**
 [conversation]: https://user-images.githubusercontent.com/56032649/65983227-eda24d00-e489-11e9-9d31-ed6d392237e3.png
 [workspaces]: https://user-images.githubusercontent.com/56032649/65982799-0100e880-e489-11e9-87c0-ae898f3603dc.png
 
-## Feature
+## Features
 
 - [x] Login
 - [x] Registeration
 - [x] List of rooms
-- [x] Join & Listening to room
-- [x] Pubnub and user list realtime change
+- [x] Joining & Listening to room
+- [x] user list realtime change (pubnub)
 - [x] User profiles
+- [x] Night theme
 - [ ] Raising hand & speaking
 - [ ] Follow & unfollow & lists
 - [ ] Update bio
 - [ ] Upload avatar
 - [ ] Explore page
 
-
-
-
-## Donation
-
-If this project help you, you can give me a cup of coffee :)
-
-<a href="https://www.buymeacoffee.com/arnnis" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-red.png" alt="Buy Me A Coffee" height="50" ></a>
 
 ## Contributing
 
@@ -86,6 +78,10 @@ To build for web:
 ```sh
 yarn web:release
 ```
+
+## Hire
+
+Looking for a React/React-Native Expert? Email at alirezarzna@gmail.com
 
 ## License
 
