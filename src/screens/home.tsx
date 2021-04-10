@@ -27,6 +27,7 @@ import Touchable from "../components/touchable";
 import { useTheme } from "../contexts/theme/context";
 import { RootState } from "../store/store";
 import RoomMiniPlayer from "../components/room-mini-player";
+import defaultAvatar from "../assets/default-avatar";
 
 interface Props {
   navigation: StackNavigationProp<StackParamList, "Home">;
@@ -61,12 +62,12 @@ const Home: FC<Props> = ({ navigation }) => {
       <View style={styles.channelBodyContainer}>
         <View style={{ width: 72, height: 72, marginRight: 16 }}>
           <Image
-            source={{ uri: item.users[0]?.photo_url }}
+            source={{ uri: item.users[0]?.photo_url ?? defaultAvatar }}
             style={[styles.channelUserAvatar, styles.channelUser1Avatar]}
           />
 
           <Image
-            source={{ uri: item.users[1]?.photo_url }}
+            source={{ uri: item.users[1]?.photo_url ?? defaultAvatar }}
             style={[styles.channelUserAvatar]}
           />
         </View>
@@ -135,8 +136,7 @@ const Home: FC<Props> = ({ navigation }) => {
         >
           <Image
             source={{
-              uri:
-                "https://clubhouseprod.s3.amazonaws.com:443/555026303_ba593aae-8fe8-4ae2-98be-24277fae5ebf_thumbnail_250x250",
+              uri: authState.user_profile?.photo_url ?? defaultAvatar,
             }}
             style={styles.avatar}
           />
