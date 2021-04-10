@@ -1,5 +1,3 @@
-# Sup
-
 Unofficial Clubhouse client with a UI similar to WhatsApp, supports Web, Android, Desktop.
 
 **Do not use this for work, it's experiemental and you might miss important messages due to bugs and
@@ -30,11 +28,11 @@ missing features.**
 - [x] Join & Listening to room
 - [x] Pubnub and user list realtime change
 - [x] User profiles
-- [] Raising hand & speaking
-- [] Follow & unfollow & lists
-- [] Update bio
-- [] Upload avatar
-- [] Explore page
+- [ ] Raising hand & speaking
+- [ ] Follow & unfollow & lists
+- [ ] Update bio
+- [ ] Upload avatar
+- [ ] Explore page
 
 
 
