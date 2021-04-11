@@ -2,13 +2,13 @@ import { RouteProp } from "@react-navigation/native";
 import React, { Component } from "react";
 import { StyleSheet, Text, View, Image, Dimensions } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Screen from "../components/screen";
-import { Channel, User } from "../models/channel";
-import { StackParamList } from "../navigator";
-import req from "../utils/req";
+import Screen from "../../components/screen";
+import { Channel, User } from "../../models/channel";
+import { StackParamList } from "../../navigator";
+import req from "../../utils/req";
 import { connect } from "react-redux";
-import { RootState } from "../store/store";
-import { withRtc, WithRtcProp } from "../contexts/rtcContext";
+import { RootState } from "../../store/store";
+import { withRtc, WithRtcProp } from "../../contexts/rtcContext";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import PubNub from "pubnub";
 import {
@@ -16,7 +16,7 @@ import {
   LayoutProvider,
   RecyclerListView,
 } from "recyclerlistview";
-import Flex from "../components/flex";
+import Flex from "../../components/flex";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 let { width } = Dimensions.get("window");

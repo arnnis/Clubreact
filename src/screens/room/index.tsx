@@ -159,10 +159,10 @@ const styles = StyleSheet.create({
   body: {
     borderTopRightRadius: 40,
     borderTopLeftRadius: 40,
-    minHeight: "100%",
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
+    flex: 1,
   },
   list: {
     padding: 24,
