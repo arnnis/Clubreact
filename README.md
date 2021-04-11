@@ -24,12 +24,12 @@ Unofficial Clubhouse app, Written in React Native.
 ## Features
 
 - [x] Login
-- [x] Registeration
 - [x] List of rooms
 - [x] Joining & Listening to room
 - [x] Audience realtime change (pubnub)
 - [x] User profiles
 - [x] Night theme
+- [ ] Registeration
 - [ ] Raising hand & speaking
 - [ ] Follow & unfollow & lists
 - [ ] Update bio

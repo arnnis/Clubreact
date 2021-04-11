@@ -48,10 +48,13 @@ const Login = () => {
       body: { phone_number: fullPhoneNumber },
     });
     console.log(res);
+    const resJson = await res.json();
     if (res.ok) {
+      if (resJson.is_waitlisted) {
+        return toast?.show("You need to get invited by someone first");
+      }
       navigate("VerificationCode", { phonenumber: fullPhoneNumber });
     } else {
-      const resJson = await res.json();
       resJson?.error_message && toast?.show(resJson?.error_message);
       resJson?.is_blocked &&
         toast?.show("You are blocked from using clubhouse");
