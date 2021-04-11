@@ -1,5 +1,6 @@
 {
   "main": "index.js",
+  "homepage": "https://arnnis.github.io/Clubreact",
   "scripts": {
     "android": "react-native run-android",
     "android:release": "npx jetifier && cd android && ./gradlew assembleRelease",
