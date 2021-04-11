@@ -11,15 +11,13 @@ Unofficial Clubhouse app, Written in React Native.
 ## Install
 
 - [Android](https://github.com/arnnis/clubreact/releases/latest) - Android apk download
-- [IOS](https://arnnis.github.io/clubreact) - No export for ios. You can build it from source.
-- [Web demo](https://arnnis.github.io/clubreact) - Web version using react-native-web & expo-web, `doesn't work because of CORS`.
+- [IOS](https://arnnis.github.io/clubreact) - No export for ios, but you can build it from source yourself.
+- [Web demo](https://arnnis.github.io/clubreact) - Web version using react-native-web & expo-web, `login broken due to CORS`.
 <!-- - [Windows](https://github.com/arnnis/Sup/releases/latest) - Windows version using electron
 - [Linux](https://github.com/arnnis/Sup/releases/latest) - Linux version using electron -->
 
 [dark]: https://user-images.githubusercontent.com/61647712/114277408-bc69ec00-9a33-11eb-9c9a-775772e73fbc.jpg
 [light]: https://user-images.githubusercontent.com/61647712/114277409-be33af80-9a33-11eb-97ba-b905ad096bb7.jpg
-[conversation]: https://user-images.githubusercontent.com/56032649/65983227-eda24d00-e489-11e9-9d31-ed6d392237e3.png
-[workspaces]: https://user-images.githubusercontent.com/56032649/65982799-0100e880-e489-11e9-87c0-ae898f3603dc.png
 
 ## Features
 
@@ -30,6 +28,7 @@ Unofficial Clubhouse app, Written in React Native.
 - [x] User profiles
 - [x] Night theme
 - [ ] Registeration
+- [ ] Create room
 - [ ] Raising hand & speaking
 - [ ] Follow & unfollow & lists
 - [ ] Update bio
