@@ -66,6 +66,7 @@ const VerificationCode: FC<Props> = ({ route }) => {
           placeholder="Verification Code"
           onChangeText={setVerificationCode}
           style={styles.input}
+          keyboardType="numeric"
         />
       </View>
       <TouchableOpacity style={styles.button} onPress={verifyCode}>

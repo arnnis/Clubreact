@@ -92,6 +92,7 @@ const Login = () => {
           onChangeText={setPhonenumber}
           style={styles.input}
           value={phonenumber}
+          keyboardType="numeric"
         />
       </View>
       <TouchableOpacity style={styles.button} onPress={requestCode}>
