@@ -27,7 +27,7 @@ Unofficial Clubhouse app, Written in React Native.
 - [x] Audience realtime change (pubnub)
 - [x] User profiles
 - [x] Night theme
-- [ ] Registeration
+- [x] Registeration
 - [ ] Create room
 - [ ] Raising hand & speaking
 - [ ] Follow & unfollow & lists
