@@ -13,6 +13,8 @@ import Room from "./screens/room";
 import { useTheme } from "./contexts/theme/context";
 import UserProfile from "./screens/user-profile";
 import { User } from "./models/channel";
+import IsWaitlisted from "./screens/is-waitlisted";
+import Register from "./screens/signup";
 
 export type StackParamList = {
   Login: undefined;
@@ -20,6 +22,8 @@ export type StackParamList = {
   Home: undefined;
   Room: { channel_id: number; channel: string };
   UserProfile: { user_id: number; user: User };
+  IsWaitlisted: undefined;
+  Register: undefined;
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -48,24 +52,38 @@ const Navigator = () => {
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
       >
-        {!!authState.auth_token ? (
-          <>
+        {authState.auth_token ? (
+          authState.is_waitlisted ? (
             <Stack.Screen
-              name="Home"
-              component={Home}
-              options={{ title: "All rooms", headerShown: false }}
+              name="IsWaitlisted"
+              component={IsWaitlisted}
+              options={{ title: "Invitation" }}
             />
+          ) : authState.is_onboarding ? (
             <Stack.Screen
-              name="Room"
-              component={Room}
+              name="Register"
+              component={Register}
               options={{ title: "" }}
             />
-            <Stack.Screen
-              name="UserProfile"
-              component={UserProfile}
-              options={{ title: "" }}
-            />
-          </>
+          ) : (
+            <>
+              <Stack.Screen
+                name="Home"
+                component={Home}
+                options={{ title: "All rooms", headerShown: false }}
+              />
+              <Stack.Screen
+                name="Room"
+                component={Room}
+                options={{ title: "" }}
+              />
+              <Stack.Screen
+                name="UserProfile"
+                component={UserProfile}
+                options={{ title: "" }}
+              />
+            </>
+          )
         ) : (
           <>
             <Stack.Screen

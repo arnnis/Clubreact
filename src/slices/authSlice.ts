@@ -25,17 +25,31 @@ const authSlice = createSlice({
   name: "app",
   initialState,
   reducers: {
-    setAuth(state, action: PayloadAction<LoginResult>) {
-      state.user_profile = action.payload.user_profile;
-      state.access_token = action.payload.access_token;
-      state.auth_token = action.payload.auth_token;
-      state.refresh_token = action.payload.refresh_token;
-      state.is_verified = action.payload.is_verified;
-      state.is_waitlisted = action.payload.is_waitlisted;
-      state.is_onboarding = action.payload.is_onboarding;
+    setAuth(state, action: PayloadAction<Partial<LoginResult>>) {
+      if (action.payload.user_profile !== undefined)
+        state.user_profile = action.payload.user_profile;
+      if (action.payload.access_token !== undefined)
+        state.access_token = action.payload.access_token;
+      if (action.payload.auth_token !== undefined)
+        state.auth_token = action.payload.auth_token;
+      if (action.payload.refresh_token !== undefined)
+        state.refresh_token = action.payload.refresh_token;
+      if (action.payload.is_verified !== undefined)
+        state.is_verified = action.payload.is_verified;
+      if (action.payload.is_waitlisted !== undefined)
+        state.is_waitlisted = action.payload.is_waitlisted;
+      if (action.payload.is_onboarding !== undefined)
+        state.is_onboarding = action.payload.is_onboarding;
     },
+
     logout(state) {
-      state = Object.assign(state, initialState);
+      state.user_profile = null;
+      state.access_token = null;
+      state.auth_token = null;
+      state.refresh_token = null;
+      state.is_verified = false;
+      state.is_waitlisted = false;
+      state.is_onboarding = false;
     },
   },
 });

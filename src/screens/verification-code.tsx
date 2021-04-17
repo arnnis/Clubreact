@@ -52,6 +52,7 @@ const VerificationCode: FC<Props> = ({ route }) => {
       !resJson.is_verified &&
         toast?.show(
           "The code you entered was incorrect, remaining attempts: " +
+            // @ts-ignore
             resJson.number_of_attempts_remaining
         );
     }

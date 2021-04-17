@@ -12,7 +12,13 @@ import RtcProvider from "./src/contexts/rtcContext";
 import { ThemeProvider } from "./src/contexts/theme/provider";
 import { RoomProvider } from "./src/contexts/room/provider";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultConfig: {
+    queries: {
+      cacheTime: 0,
+    },
+  },
+});
 
 const Root = () => (
   <ReduxProvider store={store}>

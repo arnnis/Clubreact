@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -28,6 +28,7 @@ import { useTheme } from "../contexts/theme/context";
 import { RootState } from "../store/store";
 import RoomMiniPlayer from "../components/room-mini-player";
 import defaultAvatar from "../assets/default-avatar";
+import { getMe } from "../slices/authThunks";
 
 interface Props {
   navigation: StackNavigationProp<StackParamList, "Home">;
@@ -41,6 +42,9 @@ const Home: FC<Props> = ({ navigation }) => {
   const { navigate, reset } = useNavigation();
   const dispatch = useDispatch();
   const { theme, toggleTheme } = useTheme();
+  useEffect(() => {
+    dispatch(getMe());
+  }, []);
 
   const getChannels = async () => {
     const res = await req("/get_channels");
