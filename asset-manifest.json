@@ -1,0 +1,37 @@
+{
+  "files": {
+    "app.js": "/Clubreact/static/js/app.7ed94afa.chunk.js",
+    "app.js.map": "/Clubreact/static/js/app.7ed94afa.chunk.js.map",
+    "runtime~app.js": "/Clubreact/static/js/runtime~app.ed3bee17.js",
+    "runtime~app.js.map": "/Clubreact/static/js/runtime~app.ed3bee17.js.map",
+    "static/js/2.c8387518.chunk.js": "/Clubreact/static/js/2.c8387518.chunk.js",
+    "static/js/2.c8387518.chunk.js.map": "/Clubreact/static/js/2.c8387518.chunk.js.map",
+    "fonts/AntDesign.ttf": "/Clubreact/./fonts/AntDesign.ttf",
+    "fonts/Entypo.ttf": "/Clubreact/./fonts/Entypo.ttf",
+    "fonts/Feather.ttf": "/Clubreact/./fonts/Feather.ttf",
+    "fonts/FontAwesome.ttf": "/Clubreact/./fonts/FontAwesome.ttf",
+    "fonts/FontAwesome5_Brands.ttf": "/Clubreact/./fonts/FontAwesome5_Brands.ttf",
+    "fonts/FontAwesome5_Solid.ttf": "/Clubreact/./fonts/FontAwesome5_Solid.ttf",
+    "fonts/Fontisto.ttf": "/Clubreact/./fonts/Fontisto.ttf",
+    "fonts/Foundation.ttf": "/Clubreact/./fonts/Foundation.ttf",
+    "fonts/Ionicons.ttf": "/Clubreact/./fonts/Ionicons.ttf",
+    "fonts/MaterialCommunityIcons.ttf": "/Clubreact/./fonts/MaterialCommunityIcons.ttf",
+    "fonts/MaterialIcons.ttf": "/Clubreact/./fonts/MaterialIcons.ttf",
+    "fonts/Nunito-Bold.ttf": "/Clubreact/./fonts/Nunito-Bold.ttf",
+    "fonts/Nunito-Light.ttf": "/Clubreact/./fonts/Nunito-Light.ttf",
+    "fonts/Nunito-Regular.ttf": "/Clubreact/./fonts/Nunito-Regular.ttf",
+    "fonts/Nunito-SemiBold.ttf": "/Clubreact/./fonts/Nunito-SemiBold.ttf",
+    "fonts/SimpleLineIcons.ttf": "/Clubreact/./fonts/SimpleLineIcons.ttf",
+    "index.html": "/Clubreact/index.html",
+    "manifest.json": "/Clubreact/manifest.json",
+    "serve.json": "/Clubreact/serve.json",
+    "static/js/2.c8387518.chunk.js.LICENSE.txt": "/Clubreact/static/js/2.c8387518.chunk.js.LICENSE.txt",
+    "static/media/close.android.png": "/Clubreact/static/media/close.android.0d17e028.png",
+    "static/media/close.ios.png": "/Clubreact/static/media/close.ios.81d829c3.png"
+  },
+  "entrypoints": [
+    "static/js/runtime~app.ed3bee17.js",
+    "static/js/2.c8387518.chunk.js",
+    "static/js/app.7ed94afa.chunk.js"
+  ]
+}

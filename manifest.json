@@ -1,0 +1,7 @@
+{
+  "display": "standalone",
+  "lang": "en",
+  "name": "clubhouse-app",
+  "short_name": "clubhouse-app",
+  "start_url": "/?utm_source=web_app_manifest"
+}
