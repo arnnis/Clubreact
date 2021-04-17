@@ -52,6 +52,8 @@ const Home: FC<Props> = ({ navigation }) => {
     return resJson;
   };
 
+  const navigateToExplore = () => navigate("Explore");
+
   const renderChannel = ({ item, index }: { item: Channel; index: number }) => (
     <Touchable
       key={item.channel}
@@ -113,6 +115,17 @@ const Home: FC<Props> = ({ navigation }) => {
     </Touchable>
   );
 
+  const renderExploreButton = () => (
+    <Touchable style={styles.exploreButton} onPress={navigateToExplore}>
+      <MaterialCommunityIcons
+        name="earth"
+        size={18}
+        style={{ marginRight: 4 }}
+      />
+      <Text style={styles.exploreButtonTitle}>Explore</Text>
+    </Touchable>
+  );
+
   return (
     <Screen
       style={{
@@ -154,6 +167,7 @@ const Home: FC<Props> = ({ navigation }) => {
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={refetch} />
         }
+        ListFooterComponent={renderExploreButton()}
       />
       <RoomMiniPlayer />
     </Screen>
@@ -178,6 +192,7 @@ const styles = StyleSheet.create({
   },
   channelsContainer: {
     paddingHorizontal: 16,
+    paddingBottom: 80,
   },
   channel: {
     width: "100%",
@@ -230,6 +245,19 @@ const styles = StyleSheet.create({
   channelUsersStats: {
     fontFamily: "Nunito-SemiBold",
     color: "#49464A",
+  },
+
+  exploreButton: {
+    backgroundColor: "#E8E3D7",
+    borderRadius: 16,
+    flexDirection: "row",
+    padding: 8,
+    paddingHorizontal: 16,
+    alignSelf: "center",
+  },
+  exploreButtonTitle: {
+    fontFamily: "Nunito-SemiBold",
+    color: "#8D8773",
   },
 });
 

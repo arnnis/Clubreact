@@ -15,6 +15,7 @@ import UserProfile from "./screens/user-profile";
 import { User } from "./models/channel";
 import IsWaitlisted from "./screens/is-waitlisted";
 import Register from "./screens/signup";
+import Explore from "./screens/explore";
 
 export type StackParamList = {
   Login: undefined;
@@ -24,6 +25,7 @@ export type StackParamList = {
   UserProfile: { user_id: number; user: User };
   IsWaitlisted: undefined;
   Register: undefined;
+  Explore: undefined;
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -82,6 +84,7 @@ const Navigator = () => {
                 component={UserProfile}
                 options={{ title: "" }}
               />
+              <Stack.Screen name="Explore" component={Explore} />
             </>
           )
         ) : (
