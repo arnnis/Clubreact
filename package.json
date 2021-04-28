@@ -1,5 +1,6 @@
 {
   "main": "index.js",
+  "version": "0.2.0",
   "homepage": "https://arnnis.github.io/Clubreact",
   "scripts": {
     "android": "react-native run-android",
@@ -62,6 +63,5 @@
   "jest": {
     "preset": "react-native"
   },
-  "private": true,
-  "version": "0.1.0"
+  "private": true
 }
