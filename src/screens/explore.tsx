@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  Image,
+  LayoutAnimation,
   StyleSheet,
   Text,
   TextInput,
@@ -13,17 +15,26 @@ import req from "../utils/req";
 import { APIResult } from "../models/api";
 import { useQuery } from "react-query";
 import { ScrollView } from "react-native-gesture-handler";
-import { AllTopics, MainTopic, Topic } from "../models/explore";
+import { MainTopic, Topic } from "../models/explore";
+import { User } from "../models/channel";
+import defaultAvatar from "../assets/default-avatar";
+import Flex from "../components/flex";
+import Touchable from "../components/touchable";
 
 const dims = Dimensions.get("window");
 
 const Explore = () => {
   const {
     isLoading: loadingAllTopics,
-    error,
+
     data: topics,
-    refetch,
   } = useQuery("topics", () => getAllTopics());
+  const {
+    isLoading: loadingSuggestedFollows,
+    data: suggestedFollows,
+  } = useQuery("suggestedFollows", () => getSuggestedFollows());
+  const [numFollowsShown, setNumFollowsShown] = useState(3);
+
   const getAllTopics = async () => {
     const res = await req("/get_all_topics", {
       method: "GET",
@@ -31,6 +42,20 @@ const Explore = () => {
     const resJson: APIResult<{ topics: MainTopic[] }> = await res.json();
     console.log("all topics", resJson);
     return resJson.topics;
+  };
+
+  const getSuggestedFollows = async () => {
+    const res = await req("/get_suggested_follows_all", {
+      method: "GET",
+    });
+    const resJson: APIResult<{ users: User[] }> = await res.json();
+    console.log("all suggested follows", resJson);
+    return resJson.users;
+  };
+
+  const showMoreFollow = () => {
+    setNumFollowsShown(numFollowsShown + 7);
+    LayoutAnimation.easeInEaseOut();
   };
 
   return (
@@ -42,10 +67,31 @@ const Explore = () => {
       <ScrollView>
         <Text style={styles.sectionTitle}>PEOPLE TO FOLLOW</Text>
         <View style={styles.peopleToFollowContainer}>
-          <View></View>
+          {!loadingSuggestedFollows &&
+            suggestedFollows?.slice(0, numFollowsShown)?.map((user) => (
+              <View style={styles.userContainer}>
+                <Image
+                  source={{ uri: user.photo_url ?? defaultAvatar }}
+                  style={styles.userAvatar}
+                />
+                <Flex style={{ marginLeft: 16 }}>
+                  <Text style={styles.userFullName}>{user.name}</Text>
+                  <Text>@{user.username}</Text>
+                </Flex>
+
+                <Touchable style={styles.followBtn}>
+                  <Text style={styles.followBtnTitle}>Follow</Text>
+                </Touchable>
+              </View>
+            ))}
+          <Touchable style={styles.showMoreFollowsBtn} onPress={showMoreFollow}>
+            <Text style={styles.showMoreFollowsBtnTitle}>Show more people</Text>
+          </Touchable>
         </View>
 
-        <Text style={styles.sectionTitle}>FIND CONVERSATIONS ABOUT...</Text>
+        <Text style={[styles.sectionTitle, {}]}>
+          FIND CONVERSATIONS ABOUT...
+        </Text>
         <View style={styles.topicsContainer}>
           {loadingAllTopics ? (
             <ActivityIndicator />
@@ -85,7 +131,53 @@ const styles = StyleSheet.create({
   peopleToFollowContainer: {
     width: "100%",
     backgroundColor: "#fff",
-    height: 250,
+    paddingVertical: 16,
+    marginBottom: 16,
+  },
+  userContainer: {
+    width: "100%",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    marginBottom: 16,
+  },
+  userAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 28,
+  },
+  userFullName: {
+    fontFamily: "Nunito-Bold",
+    fontSize: 15,
+    color: "#070707",
+  },
+  username: {
+    fontFamily: "Nunito-Regular",
+  },
+  followBtn: {
+    borderWidth: 2,
+    borderColor: "#6180B0",
+    borderRadius: 360,
+    paddingHorizontal: 16,
+    paddingVertical: 3,
+    marginLeft: "auto",
+  },
+  followBtnTitle: {
+    fontFamily: "Nunito-Regular",
+    color: "#6180B0",
+  },
+  showMoreFollowsBtn: {
+    backgroundColor: "#E7E3D5",
+    borderRadius: 360,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    alignSelf: "center",
+    position: "absolute",
+    bottom: -16,
+  },
+  showMoreFollowsBtnTitle: {
+    color: "#766B50",
+    fontFamily: "Nunito-Regular",
   },
   topicsContainer: {
     width: "100%",
